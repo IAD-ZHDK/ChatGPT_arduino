@@ -26,6 +26,8 @@ Before you begin, ensure you have the following:
 ## Installation
 
 1. Clone this repository to your local machine.
+2.1 add the file chatGPTkey.js to your /js folder
+2.2 `const OPENAI_API_KEY = 'your api key here'; // never share this or publish online!`
 2. Upload the example code to the Arduino
 3. Run the webapp on a local or live web server.
 4. Always ask ChatGPT to connect to the remote device first
