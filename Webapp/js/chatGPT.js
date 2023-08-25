@@ -109,17 +109,17 @@ function sendChatGPT(sQuestion, role, funtionName) {
 
 		let iMaxTokens = 2048;
 		let sUserId = "1";
-		let dTemperature = 0.5;
+
 
 		let data = {
 			model: sModel,
 			max_tokens: iMaxTokens,
 			user: sUserId,
 			temperature: dTemperature,
-			frequency_penalty: 0.1, //Number between -2.0 and 2.0  
+			frequency_penalty: frequency_penalty, //Number between -2.0 and 2.0  
 			//Positive value decrease the model's likelihood 
 			//to repeat the same line verbatim.
-			presence_penalty: 0.2, //Number between -2.0 and 2.0. 
+			presence_penalty: presence_penalty, //Number between -2.0 and 2.0. 
 			//Positive values increase the model's likelihood 
 			//to talk about new topics.
 			stop: ["#", ";"], //Up to 4 sequences where the API will stop generating 
@@ -151,6 +151,7 @@ function sendChatGPT(sQuestion, role, funtionName) {
 			}
 		}
 		*/
+		// TODO: need to fix error handling if there is too many tokens or no internet
 		try {
 			oHttp.send(JSON.stringify(data));
 		} catch (e) {

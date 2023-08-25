@@ -18,7 +18,7 @@ const functionHandler = {
             if (navigator.bluetooth == undefined) {
                 let returnObject = {
                     description: "Error",
-                    value: "BLE does not apear to be accessable in your browser. Try using Chrome",
+                    value: "BLE does not appear to be accesable in your browser. Try using Chrome",
                 }
                 resolve(returnObject);
             }
@@ -115,8 +115,10 @@ const functionHandler = {
                 console.log(uuid);
                 console.log(characteristic);
                 if (characteristic != null) {
-                    console.log("readValue");
+                 
                     characteristic.readValue().then(value => {
+                        console.log("value");
+                        console.log(value);
                         let incomingFloat = value.getInt32(0, true);
                         console.log(' > uuid ' + uuid);
                         console.log(' > value ' + incomingFloat);
