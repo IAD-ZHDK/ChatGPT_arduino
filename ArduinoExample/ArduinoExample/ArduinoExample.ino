@@ -1,7 +1,7 @@
 #include <ArduinoBLE.h>
 #include <Arduino_LSM6DS3.h> // the IMU used on the Uno Wifi rev 2
 
-BLEService arduinoBleService("19B10000-E8F2-537E-4F6C-D104768A1214"); // create service
+BLEService arduinoBleService("2C940B01-0915-47F2-920F-2DE73BA3A66B"); // create service
 
 // create characteristics and allow remote device to read and write
 BLEBoolCharacteristic LEDCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
