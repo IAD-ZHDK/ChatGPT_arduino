@@ -68,7 +68,9 @@ body {
 .function {
   color: rgb(100, 100, 100);
 }
-
+.system {
+  color: rgb(84, 161, 255);
+}
 
 .assistant {
   color: rgb(213, 26, 255);

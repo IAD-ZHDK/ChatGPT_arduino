@@ -6,8 +6,9 @@ window.onload = function () {
 	setupSpeech();
 
 	textLogerln('<b>Welcome to ChatGPT BLE Arduino Connector</b>', "info");
-	textLogerln("model:" + sModel, "info");
-	textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + " 🎤 ");
+	textLogerln("model: " + sModel, "info");
+	textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + ". Press Ctrl+z to turn on 🎤 ", "info");
+	textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
 }
 
@@ -27,7 +28,7 @@ function keypressed(event) {
 	if (userActive) {
 		if (event.key == "Enter" || event == true) {
 			// submit text
-			submitPromt(prompt);
+			submitPromt(prompt.value, "user");
 		}
 	}
 
@@ -41,15 +42,15 @@ function keypressed(event) {
 
 
 
-function submitPromt(prompt) {
-	let input = prompt.value;
+function submitPromt(input, role) {
+	let prompt = document.getElementById("prompt");
 	if (input != "") {
-		textLogerln(input, "user")
+		textLogerln(input, role)
 		userActive = false;
 		let thinking = document.getElementById("thinking");
 		thinking.style.display = "inline-block";
 		prompt.style.display = "none"
-		sendChatGPT(input, "user").then((returnObject) => {
+		sendChatGPT(input, role).then((returnObject) => {
 			// handle nested promises that might be returned
 			recievedMessage(returnObject)
 		}).catch(error => textLogerln(error.message, "assistant"));

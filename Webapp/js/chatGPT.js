@@ -64,11 +64,10 @@ function sendChatGPT(sQuestion, role, funtionName) {
 						arguments.defaultValue = "nothing";
 						console.log(arguments);
 						if (typeof eval("functionHandler." + functionName) === "function") {
-							//a matching function was founf
+							//a matching function was found
 							console.log(">  function exists: " + functionName);
 							console.log(">  function arguments: " + arguments)
 							let functionReturnPromise = functionHandler[functionName](arguments); // the call to the function
-
 							functionReturnPromise.then(functionReturnObject => {
 								let formatedValue = '{\"' + functionReturnObject.description + '\": "' + functionReturnObject.value + '"}'
 								console.log(functionReturnObject)

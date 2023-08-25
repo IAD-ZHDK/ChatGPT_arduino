@@ -1,8 +1,43 @@
 
 let bleConnected = false;
 let myCharacteristics = [];
-const functionHandler = {
 
+function handleNotifications(event) {
+    // this is setup for getting IMU data from the arduino 
+    console.log(" 🎉 🎊 event! 🎉 🎊 ")
+    let value = event.target.value;
+    let notifyObject = BLENotify.find(notifyObj => notifyObj.uuid === event.currentTarget.uuid);
+    if (notifyObject != null) {
+        // there is a matching characteristics in the BLENotify list
+        let oldValue = notifyObject.value;
+        if (notifyObject.type == "boolean") {
+            notifyObject.value = value.getUint8();
+        } else if (notifyObject.type == "int") {
+            notifyObject.value = value.getFloat32(0, true);
+        }
+        let updateObject = {
+            description: notifyObject.info,
+            value: notifyObject.value,
+            type: notifyObject.type,
+        }
+        // handle boolean events
+        if (notifyObject.type == "boolean" && notifyObject.checkOn != "change") {
+                if (oldValue < notifyObject.value && notifyObject.checkOn == "rise") {
+                    // rising
+                    console.log("rising")
+                    submitPromt(JSON.stringify(updateObject), "system");
+                } else if (oldValue > notifyObject.value && notifyObject.checkOn == "fall") {
+                    //falling
+                    console.log("falling")
+                    submitPromt(JSON.stringify(updateObject), "system");
+                }
+        } else {
+            console.log("everything else")
+            submitPromt(JSON.stringify(updateObject), "system");
+        }
+    }
+}
+const functionHandler = {
     checkConection() {
         return new Promise(function (resolve, reject) {
             let returnObject = {
@@ -18,7 +53,7 @@ const functionHandler = {
             if (navigator.bluetooth == undefined) {
                 let returnObject = {
                     description: "Error",
-                    value: "BLE does not appear to be accesable in your browser. Try using Chrome",
+                    value: "BLE does not appear to be accessible in your browser. Try using Chrome",
                 }
                 resolve(returnObject);
             }
@@ -41,12 +76,20 @@ const functionHandler = {
                     return service.getCharacteristics();
                 })
                 .then(characteristics => {
-                    console.log('Getting all Notifications started');
+
                     for (const c in characteristics) {
                         myCharacteristics.push(characteristics[c]);
-                        // characteristics[c].startNotifications().then(_ => {
-                        //     characteristics[c].addEventListener('characteristicvaluechanged', handleNotifications);
-                        // });
+                        try {
+                            if (characteristics[c].properties.notify) {
+                                characteristics[c].startNotifications().then(_ => {
+                                    characteristics[c].addEventListener('characteristicvaluechanged', handleNotifications);
+                                    // this characteristics is setup for notifications
+                                    console.log('Getting notifications started on: ' + characteristics[c].uuid);
+                                });
+                            }
+                        } catch (e) {
+                            console.log(e);
+                        }
                         console.log("characteristics" + c + " :");
                         console.log(characteristics[c]);
                     }
@@ -115,7 +158,7 @@ const functionHandler = {
                 console.log(uuid);
                 console.log(characteristic);
                 if (characteristic != null) {
-                 
+
                     characteristic.readValue().then(value => {
                         console.log("value");
                         console.log(value);
