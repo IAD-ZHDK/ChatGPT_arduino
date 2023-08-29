@@ -1,5 +1,5 @@
-void BLESetup() {
-// begin initialization
+void BLESetup(const char* name) {
+  // begin initialization
   if (!BLE.begin()) {
     Serial.println("starting BLE failed!");
     while (1)
@@ -12,8 +12,8 @@ void BLESetup() {
       ;
   }
 
-  // set the local name peripheral advertises
-  BLE.setLocalName("arduinoBLEdemo");
+  BLE.setLocalName(name);     // set the local name peripheral advertises
+
   // set the UUID for the service this peripheral advertises:
   BLE.setAdvertisedService(arduinoBleService);
 
@@ -42,8 +42,8 @@ void runBLE() {
 
     while (central.connected()) {
       // note: we will stay in this loop as long as we are connected via BLE!
-      loop2();
+      loopGPT();
     }
   }
-  loop2();  // run everything here even if we are not connected
+  loopGPT();  // run everything here even if we are not connected
 }
