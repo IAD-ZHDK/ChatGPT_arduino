@@ -4,16 +4,11 @@ Connect ChatGPT to the physical world!
 
 This project enables you to connect ChatGPT with an Arduino using Bluetooth Low Energy (BLE). In the future we may add other options for connections like Serial and MQTT. The code runs in a web app using the BLE Web API, which works in the Chrome browser.
 
-
-## About
-
-The ChatGPT-Arduino Bluetooth Interface project aims to bridge the communication gap between ChatGPT, a powerful language model, and Arduino, a versatile microcontroller. By using BLE, you can control your Arduino projects using natural language input through a web app. 
-
 ## Features
 
 - **ChatGPT Integration:** Connects ChatGPT with an Arduino, enabling you to send commands and receive responses via BLE.
 
-- **Web App Interface:** The project includes a web app that you can access using the Chrome browser. The web app communicates with the Arduino through the BLE Web API.
+- **Web App Interface:** The project includes a web app that you can access using the Chrome browser. The web app communicates with the Arduino through the BLE Web API. The app is built with vanilla JS and requires no compiling to run. 
 
 ## Prerequisites
 
@@ -26,10 +21,14 @@ Before you begin, ensure you have the following:
 ## Installation
 
 1. Clone this repository to your local machine.
-2. Upload the example code to the Arduino
-3. Run the webapp on a local or live web server.
-4. Always ask ChatGPT to connect to the remote device first
-5. Change the bevahour of chatGPT by editing the params.js file
+2. Upload the example code to the Arduino ( see more information below)
+3. Create a file called "chatGPTkey.js" in the /js directory of the webapp. Inside this file, add the line: 
+```
+const OPENAI_API_KEY = 'PUT YOUR API KEY HERE'; // never share this or publish online!
+```
+4. Run the webapp on a local or live web server.
+5. Always ask ChatGPT to connect to the remote device first
+6. Change the behaviour of chatGPT by editing the params.js file
 
 ## Arduino
 
