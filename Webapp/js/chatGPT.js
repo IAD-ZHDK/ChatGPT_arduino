@@ -7,6 +7,58 @@ let txtOutputVal = "";
 let sUrl = "https://api.openai.com/v1/chat/completions" // gpt-4 is "https://api.openai.com/v1/completions";
 let sModel = "gpt-3.5-turbo";
 
+
+function setupChatGPTFunctions() {
+	// format all BleCharacteristics and add to chatGPTs function list
+
+	for (const key in BleCharacteristics) {
+
+		let newFunction = {
+			"name": "",
+			"description": "",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"value": {
+						"type": "",
+						"description": "",
+					},
+				}
+			},
+		};
+
+		let bleName = key
+		let UUID = ""
+		let dataType = ""
+		let description = ""
+
+		try {
+			dataType = BleCharacteristics[key].dataType
+		} catch (e) {
+			console.log("type not defined!" + e);
+		}
+
+		try {
+			UUID = BleCharacteristics[key].UUID
+		} catch (e) {
+			console.log("UUID not defined!" + e);
+		}
+		try {
+			description = BleCharacteristics[key].description
+		} catch (e) {
+			console.log("info not defined!" + e);
+		}
+		newFunction.name = bleName
+		newFunction.description = description
+		newFunction.parameters.properties.value.type = dataType
+		newFunction.parameters.properties.value.description = description
+
+		// add new function to list
+		functionList.push(newFunction)
+	}
+
+}
+
 function sendChatGPT(sQuestion, role, funtionName) {
 
 	return new Promise(function (resolve, reject) {
@@ -57,17 +109,20 @@ function sendChatGPT(sQuestion, role, funtionName) {
 					}
 					s = oJson.choices[0].message.content;
 					if (oJson.choices[0].finish_reason == "function_call") {
-						console.log("function_call");
+
 						console.log(oJson.choices[0].message.function_call)
+
 						let functionName = oJson.choices[0].message.function_call.name;
+						console.log("function_call, function name: " + functionName);
 						const arguments = JSON.parse(oJson.choices[0].message.function_call.arguments);
 						arguments.defaultValue = "nothing";
-						console.log(arguments);
+						console.log("arguments:", arguments);
+						let functionReturnPromise
 						if (typeof eval("functionHandler." + functionName) === "function") {
 							//a matching function was found
 							console.log(">  function exists: " + functionName);
 							console.log(">  function arguments: " + arguments)
-							let functionReturnPromise = functionHandler[functionName](arguments); // the call to the function
+							functionReturnPromise = functionHandler[functionName](arguments); // the call to the function
 							functionReturnPromise.then(functionReturnObject => {
 								let formatedValue = '{\"' + functionReturnObject.description + '\": "' + functionReturnObject.value + '"}'
 								console.log(functionReturnObject)
@@ -82,6 +137,36 @@ function sendChatGPT(sQuestion, role, funtionName) {
 								}
 								resolve(returnObject);
 							})
+						} else if (BleCharacteristics.hasOwnProperty(functionName)) {
+							// this is for BLE functions defined in params.js 
+
+							console.log(functionName + " exists in BleCharacteristics!")
+							console.log("arguments: " + arguments)
+							arguments.uuid = BleCharacteristics[functionName].uuid
+							arguments.dataType = BleCharacteristics[functionName].dataType
+							let functionReturnPromise;
+							if (BleCharacteristics[functionName].bleType == "readWrite" || BleCharacteristics[functionName].bleType == "write") {
+								functionReturnPromise = functionHandler["write_to_Device"](arguments)
+							} else {
+								// read only 
+								functionReturnPromise = functionHandler["get_device_property"](arguments)
+							}
+
+							functionReturnPromise.then(functionReturnObject => {
+								let formatedValue = '{\"' + functionReturnObject.description + '\": "' + functionReturnObject.value + '"}'
+								console.log(functionReturnObject)
+								// we always need to send the value back to chatGPT
+								returnObject.promise = sendChatGPT(formatedValue, 'function', functionName)
+								if (functionReturnObject.description == "Error") {
+									returnObject.message = "function_call with error:" + functionReturnObject.value;
+									returnObject.role = "error"
+								} else {
+									returnObject.message = "function_call"
+									returnObject.role = "function"
+								}
+								resolve(returnObject);
+							})
+
 						} else {
 							returnObject.message = "Error: function does not exist";
 							returnObject.role = "error"
@@ -109,7 +194,7 @@ function sendChatGPT(sQuestion, role, funtionName) {
 		let iMaxTokens = 2048;
 		let sUserId = "1";
 
-
+		console.log(conversationProtocal);
 		let data = {
 			model: sModel,
 			max_tokens: iMaxTokens,
@@ -150,6 +235,7 @@ function sendChatGPT(sQuestion, role, funtionName) {
 			}
 		}
 		*/
+
 		// TODO: need to fix error handling if there is too many tokens or no internet
 		try {
 			oHttp.send(JSON.stringify(data));
@@ -158,11 +244,38 @@ function sendChatGPT(sQuestion, role, funtionName) {
 			returnObject.role = "error"
 			resolve(returnObject);
 		}
-		//if (txtOutputVal != "") {
-		//	txtOutputVal += "\n";
-		//}
-		//   txtOutputVal = "";
-		//	console.log(txtOutputVal);
 
 	})
 }
+
+
+let functionList = [
+
+	{
+		"name": "checkConection",
+		"description": "check if the connection is turned on",
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"value": {
+					"type": "integer",
+					"description": "no paramaters are needed",
+				},
+			}
+		},
+	},
+	{
+		"name": "connectToDevice",
+		"description": "connect to external device",
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"value": {
+					"type": "boolean",
+					"description": "mandatory property, has no impact on return value",
+				},
+			}
+		},
+	},
+
+];

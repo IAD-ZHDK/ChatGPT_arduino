@@ -19,6 +19,11 @@ void setup() {
   Serial.begin(9600);
   delay(100);
   BLESetup("arduinoChaTGPT");  // Don't remove this line!
+  if (!IMU.begin()) {
+    Serial.println("Failed to initialize IMU!");
+    while (1)
+      ;
+  }
   pinMode(LED_BUILTIN, OUTPUT);
 }
 

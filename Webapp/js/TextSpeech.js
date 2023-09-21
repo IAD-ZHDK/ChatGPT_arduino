@@ -17,20 +17,20 @@ function setupSpeech() {
 	if ('speechSynthesis' in window) {
 		console.log("speechSynthesis is on");
 		bTextToSpeechSupported = true;
-		speechSynthesis.onvoiceschanged = function() {
+		speechSynthesis.onvoiceschanged = function () {
 			oVoices = window.speechSynthesis.getVoices();
 			for (var i = 0; i < oVoices.length; i++) {
-				console.log(i +" "+oVoices[i].name)
+				console.log(i + " " + oVoices[i].name)
 			}
 		};
 	}
 }
 
 function speakTest() {
-    var msg = new SpeechSynthesisUtterance('Hello world');
-    msg.rate = 0.7;
-    msg.pitch = 1;
-    window.speechSynthesis.speak(msg);
+	var msg = new SpeechSynthesisUtterance('Hello world');
+	msg.rate = 0.7;
+	msg.pitch = 1;
+	window.speechSynthesis.speak(msg);
 }
 
 function TextToSpeech(s) {
@@ -52,7 +52,7 @@ function TextToSpeech(s) {
 	}
 
 
-	oSpeechSynthesisUtterance.onend = function() {
+	oSpeechSynthesisUtterance.onend = function () {
 		//finished talking - can now listen
 		console.log("finished talking");
 		if (oSpeechRecognizer && chkSpeak) {
@@ -85,36 +85,41 @@ function TextToSpeech(s) {
 		console.log("Error: " + ex.message);
 	}
 }
-
+function pauseSpeechTasks() {
+	try {
+		window.speechSynthesis.cancel();// need this because of chrome bug
+		oSpeechRecognizer.stop();
+	} catch (e) { }
+}
 
 function SpeechToText() {
 	if (SpeechRecognitionOn) {
-	chkSpeak = true;
-	oSpeechRecognizer = new webkitSpeechRecognition();
-	oSpeechRecognizer.continuous = true;
-	oSpeechRecognizer.interimResults = true;
-	oSpeechRecognizer.lang = "en-US"; // or "de-DE"
-	oSpeechRecognizer.start();
-	oSpeechRecognizer.onresult = function(event) {
+		chkSpeak = true;
+		oSpeechRecognizer = new webkitSpeechRecognition();
+		oSpeechRecognizer.continuous = true;
+		oSpeechRecognizer.interimResults = true;
+		oSpeechRecognizer.lang = "en-US"; // or "de-DE"
+		oSpeechRecognizer.start();
+		oSpeechRecognizer.onresult = function (event) {
 
-		let interimTranscripts = "";
-		let prompt = document.getElementById("prompt");
-		for (let i = event.resultIndex; i < event.results.length; i++) {
-			let transcript = event.results[i][0].transcript;
-			if (event.results[i].isFinal) {
-				submitPromt(prompt);
-				//prompt.innerHTML = "";
-			} else {
-				transcript.replace("\n", "<br>");
-				interimTranscripts += transcript;
-				console.log(interimTranscripts);
-				prompt.value = interimTranscripts;
+			let interimTranscripts = "";
+			let prompt = document.getElementById("prompt");
+			for (let i = event.resultIndex; i < event.results.length; i++) {
+				let transcript = event.results[i][0].transcript;
+				if (event.results[i].isFinal) {
+					submitPrompt(transcript, "user");
+					//prompt.innerHTML = "";
+				} else {
+					transcript.replace("\n", "<br>");
+					interimTranscripts += transcript;
+					console.log(interimTranscripts);
+					prompt.value = interimTranscripts;
+				}
 			}
-		}
-	};
+		};
 
-	oSpeechRecognizer.onerror = function(event) {
-		console.log("error in speech recognition");
-	};
-}
+		oSpeechRecognizer.onerror = function (event) {
+			console.log("error in speech recognition");
+		};
+	}
 }

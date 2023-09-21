@@ -61,7 +61,7 @@ const functionHandler = {
     },
 
 
-    connectToBle() {
+    connectToDevice() {
         return new Promise(function (resolve, reject) {
             console.log('Requesting Bluetooth Device...');
             if (navigator.bluetooth == undefined) {
@@ -126,7 +126,7 @@ const functionHandler = {
         })
     },
 
-    writeToCharacteristic(object) {
+    write_to_Device(object) {
         let returnObject = {
             description: "Writing to Characteristic",
             value: "",
@@ -134,22 +134,29 @@ const functionHandler = {
         return new Promise(function (resolve, reject) {
             // if (object.uuid && object.value) {
             let characteristic = myCharacteristics.find(characteristic => characteristic.uuid === object.uuid);
-            console.log(object.uuid);
-            console.log(object.value);
-            console.log(myCharacteristics);
+            console.log("writing to device:");
             if (characteristic != null) {
                 let bufferToSend;
-                if (typeof object.value == "string")  {
-                    bufferToSend = str2ab(object.value); // assume it's a sting and convert it to an arraybuffer 
-                 } else {
+                 if (object.dataType == "boolean")  { 
+                    console.log("boolean")
                     bufferToSend = Int8Array.of(object.value); 
-                }
+                } else if (object.dataType == "integer" || typeof object.value == "int")  { 
+                    console.log("int")
+                    bufferToSend = Int32Array.of(object.value); 
+                } else if ( object.dataType  == "number")  { 
+                    console.log("float")
+                    bufferToSend = Float32Array.of(object.value); 
+                } else {
+                    // treat everything else as a string
+                    console.log("string")
+                    bufferToSend = str2ab(object.value); // assume it's a sting and convert it to an arraybuffer 
+                } 
                 characteristic.writeValueWithResponse(bufferToSend)
                     .then(_ => {
                         console.log(' > uuid ' + object.uuid);
                         console.log(' > value ' + object.value);
-                        console.log(' > Characteristic changed to: ');
-                        console.log(bufferToSend);
+                        console.log(' > value changed to: ');
+                        console.log(' > '+bufferToSend);
                         returnObject.value = "success!"
                         resolve(returnObject);
                     })
@@ -165,8 +172,7 @@ const functionHandler = {
         })
     },
 
-    readCharacteristic(object) {
-
+    get_device_property(object) {
         let returnObject = {
             description: "reading characteristic",
             value: "",
@@ -184,10 +190,20 @@ const functionHandler = {
                     characteristic.readValue().then(value => {
                         console.log("value");
                         console.log(value);
-                        let incomingFloat = value.getInt32(0, true);
+
+                      let incomingValue = 0;
                         console.log(' > uuid ' + uuid);
-                        console.log(' > value ' + incomingFloat);
-                        returnObject.value = incomingFloat;
+                        console.log(' > value ' + incomingValue);
+
+                        if (object.dataType == "boolean")  { 
+                            incomingValue = value.getInt8();
+                        } else if (object.dataType == "integer" || typeof object.value == "int")  { 
+                            incomingValue = value.getInt32();
+                        } else if ( object.dataType  == "number")  { 
+                        // treat everything else as a float
+                            incomingValue = value.getFloat32()
+                        } 
+                        returnObject.value = incomingValue;
                         resolve(returnObject);
                     }).catch(error => {
                         returnObject.description = "Error";

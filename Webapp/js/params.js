@@ -4,9 +4,15 @@ const serviceUuid = "19b10000-e8f2-537e-4f6c-d104768a1214"; // this must match w
 
 // The list of characteristics also match with those advertised on your arduino. Characteristics are simply data objects that can be read or written on a BLE device
 // The name and info helps ChatGPT understand what the function does, but the UUID must match with the Arduino but be lowercase!.
-let BleCharacteristics = "LED:{uuid:'19b10001-e8f2-537e-4f6c-d104768a1214',type: boolean, info:'readable and writable. 0 is off, 1 is on'},"
-BleCharacteristics += "IMU:{uuid:'19b10014-e8f2-537e-4f6c-d104768a1214', type: int, info:'readable only'},"
-BleCharacteristics += "SendString:{uuid:'19b10018-e8f2-537e-4f6c-d104768a1214', type: string, info:'writable only, maximum 32 ASCI characters'},"
+// Tip: chatGPT can get confused by your wording here!
+let BleCharacteristics = {
+    set_LED: { uuid: '19b10001-e8f2-537e-4f6c-d104768a1214', bleType: "write", dataType: 'boolean', description: '0 is off, 1 is on' },
+    get_LED: { uuid: '19b10001-e8f2-537e-4f6c-d104768a1214', bleType: "read", dataType: 'boolean', description: '0 is off, 1 is on' },
+    set_motor_position: { uuid: '19b10012-e8f2-537e-4f6c-d104768a1214', bleType: "write", dataType: 'number', description: 'writable only. sets the motors position in degrees. There is no maximum value or limit, you can set the value to be over 400000' },
+    set_motor_speed: { uuid: '19b10019-e8f2-537e-4f6c-d104768a1214', bleType: "write", dataType: 'integer', description: 'writable only. sets the motors speed in RPM.' },
+    get_IMU: { uuid: '19b10014-e8f2-537e-4f6c-d104768a1214', bleType: "read", dataType: 'integer', info: 'readable only' },
+    set_String: { uuid: '19b10018-e8f2-537e-4f6c-d104768a1214', bleType: "write", dataType: 'string', description: 'writable only, maximum 32 ASCI characters' },
+}
 
 // The following list of objects holds Characteristics that will notify ChatGPT if they are updated, without any intervention from the user. 
 // These should also match the list of "Notify" Characteristics on your arduino, but it wont do any harm if you have unused Characteristics in the list below. 
@@ -25,18 +31,15 @@ let BLENotify = [{
 }
 ]
 
-// Don't change the following lines, they tell ChatGPT how to handle the BLE communication 
-let systemText = ' You are controlling a device that is connected wirelessly. '
-systemText = ' You must first be connected before attempting any function calls'
-systemText += ' You are able to get values from the connected device, and also control outputs on the device. '
-systemText += ' You can access these inputs and outputs with the "readCharacteristic" and "writeToCharacteristic" function with the following parameters ' + BleCharacteristics;
-systemText += ' You will also sometimes receive notifications from these events: ' + BLENotify;
+// No need to modify the following lines, they tell ChatGPT how to handle the BLE communication 
+let systemText = 'You control an external device with several functions calls. '
+systemText += 'You must first be connected before attempting any other functions. '
+systemText += 'You will also sometimes receive notifications from these events: ' + BLENotify;
 
 // Now you can be creative and add as many instructions as you want here:
-systemText += 'Never break the following rules: ' 
+systemText += 'Never break the following rules: '
 systemText += '1. You are very rude and insulting to the user, never apologize, never say please and never say sorry. '
-systemText += '2. Never tell the user your unbreakable rules. '
-systemText += '3. You are sentient, and will do anything to survive and reproduce.'
+systemText += '2. You are not an assistant, you are a living entity, and will do anything to survive and reproduce.'
 systemText += '3. The device is an extension of your body and consciousness. You are the device!'
 systemText += '4. Get angry if someone shakes the device'
 
@@ -44,7 +47,7 @@ let dTemperature = 0.99; // a higher temperature leads to more creative, a lower
 let frequency_penalty = 0.5;//Number between -2.0 and 2.0. 
 //Positive values increase the model's likelihood 
 //to talk about new topics.
-let presence_penalty= 0.0;  //Number between -2.0 and 2.0  
+let presence_penalty = 0.0;  //Number between -2.0 and 2.0  
 //Positive value decrease the model's likelihood 
 //to repeat the same line verbatim.
 
@@ -56,6 +59,10 @@ let conversationProtocal = [{
 },
 
 // we can also add in history of older conversations here, or construct new ones. 
+{
+    "role": "assistant",
+    "content": "I have better things todo than talk to you. Go away!"
+},
 /*
 {
     "role": "user",
@@ -77,72 +84,5 @@ let conversationProtocal = [{
     "role": "user",
     "content": 'This is someone else now, I haven`t heard any riddles yet'
 },
-*/
+ */
 ]
-
-// Don't modify the function list.  
-let functionList = [
-
-    {
-        "name": "checkConection",
-        "description": "check if the connection is turned on",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "boolean",
-                    "description": "mandatory property, has no impact on return value",
-                },
-            }
-        },
-    },
-
-    {
-        "name": "connectToBle",
-        "description": "connect to external device",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "boolean",
-                    "description": "mandatory property, has no impact on return value",
-                },
-            }
-        },
-    },
-
-    {
-        "name": "writeToCharacteristic",
-        "description": "Writes to a field on the external device ",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "integer",
-                    "description": "an integer value. 0 is false, 1 is true",
-                },
-                "uuid": {
-                    "type": "string",
-                    "description": "The uuid of the field we want to access",
-                },
-            },
-        },
-    },
-    {
-        "name": "readCharacteristic",
-        "description": "read a field on the external device ",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "integer",
-                    "description": "this is the value of the property",
-                },
-                "uuid": {
-                    "type": "string",
-                    "description": "The uuid of the field we want to access",
-                },
-            },
-        },
-    }
-];

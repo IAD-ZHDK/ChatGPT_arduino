@@ -4,10 +4,12 @@ let userActive = false;
 // outputs 
 window.onload = function () {
 	setupSpeech();
-
+	setupChatGPTFunctions();
 	textLogerln('<b>Welcome to ChatGPT BLE Arduino Connector</b>', "info");
 	textLogerln("model: " + sModel, "info");
-	textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + ". Press Ctrl+z to turn on 🎤 ", "info");
+
+	textLogerln("🎤 speech recognition is " + ((chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
+	textLogerln("🛜 Press Ctrl+b to turn on BLE, or ask ChatGPT to connect", "info");
 	textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
 }
@@ -28,21 +30,29 @@ function keypressed(event) {
 	if (userActive) {
 		if (event.key == "Enter" || event == true) {
 			// submit text
-			submitPromt(prompt.value, "user");
+			pauseSpeechTasks(); 
+			submitPrompt(prompt.value, "user");
 		}
 	}
 
 
-	// turn sound on "Ctrl+z"
-	if (event.key == "z" || event.key == "Z" && event.ctrlKey) {
+	// turn sound on "Ctrl+S"
+	if (event.key == "s" && event.ctrlKey || event.key == "S" && event.ctrlKey) {
 		SpeechToText();
-		textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + " 🎤 ");
+		textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + " 🎤 ", "info");
+	}
+
+	// connect to BLE with "Ctrl+b"
+	if (event.key == "b" && event.ctrlKey || event.key == "B" && event.ctrlKey) {
+		console.log("b clicked")
+		functionHandler["connectToDevice"]()
+		textLogerln("trying to connect to ble", "info");
 	}
 }
 
 
 
-function submitPromt(input, role) {
+function submitPrompt(input, role) {
 	let prompt = document.getElementById("prompt");
 	if (input != "") {
 		textLogerln(input, role)
