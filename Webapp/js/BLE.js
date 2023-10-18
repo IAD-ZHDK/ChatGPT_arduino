@@ -25,15 +25,15 @@ function handleNotifications(event) {
                 if (oldValue < notifyObject.value && notifyObject.checkOn == "rise") {
                     // rising
                     console.log("value rising")
-                    submitPromt(JSON.stringify(updateObject), "system");
+                    submitPrompt(JSON.stringify(updateObject), "system");
                 } else if (oldValue > notifyObject.value && notifyObject.checkOn == "fall") {
                     //falling
                     console.log("value falling")
-                    submitPromt(JSON.stringify(updateObject), "system");
+                    submitPrompt(JSON.stringify(updateObject), "system");
                 }
         } else {
             console.log("value change")
-            submitPromt(JSON.stringify(updateObject), "system");
+            submitPrompt(JSON.stringify(updateObject), "system");
         }
     }
 }
@@ -46,7 +46,7 @@ function onDisconnected(event) {
     }
     bleConnected = false;
     // functionHandler.autoConnect()
-   submitPromt(JSON.stringify(updateObject), "system");
+    submitPrompt(JSON.stringify(updateObject), "system");
   }
 
 const functionHandler = {
