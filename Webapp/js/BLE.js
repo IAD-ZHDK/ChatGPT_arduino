@@ -13,7 +13,7 @@ function handleNotifications(event) {
         if (notifyObject.type == "boolean") {
             notifyObject.value = value.getUint8();
         } else if (notifyObject.type == "int") {
-            notifyObject.value = value.getInt16(0, true);
+            notifyObject.value = value.getInt32(0, true);
         }
         let updateObject = {
             description: notifyObject.info,
