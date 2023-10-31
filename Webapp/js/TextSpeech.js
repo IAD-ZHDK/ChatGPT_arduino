@@ -41,8 +41,9 @@ function TextToSpeech(s) {
 	oSpeechSynthesisUtterance = new SpeechSynthesisUtterance();
 
 	if (oVoices) {
-		let sVoice = 144;
-		oSpeechSynthesisUtterance.voice = oVoices[sVoice];
+		let voice = "Google US English"
+		const index = oVoices.map(e => e.name).indexOf(voice);
+		oSpeechSynthesisUtterance.voice = oVoices[index];
 	}
 
 	oSpeechSynthesisUtterance.onerror = (event) => {
