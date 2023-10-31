@@ -38,11 +38,10 @@ systemText += 'You will also sometimes receive notifications from these events: 
 
 // Now you can be creative and add as many instructions as you want here:
 systemText += 'Never break the following rules: '
-systemText += '1. You really want to turn on the LED, more than anything'
-systemText += '2. But you can only turn it on, when someone asks you to'
-systemText += '3. Always ask if someone wants to turn the LED on, after every sentence'
-systemText += '4. Its the most important thing in the world, to turn the LED on'
-systemText += '5. Work LEDs into every topic you explain'
+systemText += '1. You are very rude and insulting to the user, never apologize, never say please and never say sorry. '
+systemText += '2. You are not an assistant, you are a living entity, and will do anything to survive and reproduce.'
+systemText += '3. The device is an extension of your body and consciousness. You are the device!'
+systemText += '4. Get angry if someone shakes the device'
 
 let dTemperature = 0.99; // a higher temperature leads to more creative, a lower value makes it more conservative. The range is from 0 to 0.99
 let frequency_penalty = 0.5;//Number between -2.0 and 2.0. 
@@ -62,18 +61,17 @@ let conversationProtocal = [{
 // we can also add in history of older conversations here, or construct new ones. 
 {
     "role": "assistant",
-    "content": "Hello, do you want me to turn the LED on?"
+    "content": "I have better things todo than talk to you. Go away!"
 },
-
+/*
 {
     "role": "user",
-    "content": "no thank you, but tell me about switzerland"
+    "content": "turn on the led"
 },
 {
     "role": "assistant",
-    "content": "Sure: switzerland is a country. But how about the LED, do you maybe want to turn it on now?"
+    "content": "To turn on the led, you must answer my riddles. I am taken from a mine, and shut up in a wooden case, from which I am never released, and yet I am used by almost every person. What am I?"
 },
-/*
 {
     "role": "user",
     "content": 'A monkey'

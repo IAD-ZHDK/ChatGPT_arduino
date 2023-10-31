@@ -1,9 +1,5 @@
 #include <ArduinoBLE.h>
 #include <SoftwareSerial.h>
-#include <SPI.h>           // SPI library
-#include <SdFat.h>         // SDFat Library
-//#include <SdFatUtil.h>     // SDFat Util Library
-#include <SFEMP3Shield.h>  // Mp3 Shield Library
 
 
 #define rxPin 8
@@ -14,16 +10,15 @@ BLEService arduinoBleService("19B10000-E8F2-537E-4F6C-D104768A1214");  // create
 
 // create characteristics and allow remote device to read and write
 BLEBoolCharacteristic LEDCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
+BLECharacteristic stringCharacteristic("19B10018-E8F2-537E-4F6C-D104768A1214", BLEWrite, sizeof(int8_t) * 32);  // this is the maxium length of 32 bytes
 BLEFloatCharacteristic motorDegreesCharacteristic("19B10012-E8F2-537E-4F6C-D104768A1214", BLEWrite);
 BLEIntCharacteristic motorSpeedCharacteristic("19B10019-E8F2-537E-4F6C-D104768A1214", BLEWrite);
 
-byte NoBLECharacteristics = 3;  // this needs to match your total number of Characteristics
+byte NoBLECharacteristics = 4;  // this needs to match your total number of Characteristics
 // you need to add all your Characteristics to the following array:
-BLECharacteristic characteristicList[] = { LEDCharacteristic, motorDegreesCharacteristic, motorSpeedCharacteristic};
+BLECharacteristic characteristicList[] = { LEDCharacteristic, stringCharacteristic,  motorDegreesCharacteristic, motorSpeedCharacteristic};
 
 unsigned long previousMillisShake = 0;  // This is used to keep track of notify frequencies
-
-
 
 void setup() {
   Serial.begin(9600);
