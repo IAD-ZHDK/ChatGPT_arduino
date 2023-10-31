@@ -75,8 +75,6 @@ function TextToSpeech(s) {
 	oSpeechSynthesisUtterance.lang = "en-US";
 	oSpeechSynthesisUtterance.text = s;
 	oSpeechSynthesisUtterance.rate = 1.2;
-	//Uncaught (in promise) Error: A listener indicated an asynchronous response 
-	//by returning true, but the message channel closed 
 	try {
 		//	console.log(oSpeechSynthesisUtterance);
 		window.speechSynthesis.cancel();// need this because of chrome bug

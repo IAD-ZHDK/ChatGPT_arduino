@@ -27,7 +27,7 @@ let BLENotify = [{
     name: 'Potentiometer',
     uuid: '19b10036-e8f2-537e-4f6c-d104768a1214',
     type: "int", // possible values are "boolean" and "int"
-    info: "The Potentiometer has been updated, and has a new value. Minimum is 0, Maximum is 1043"
+    info: "The Potentiometer has been updated, and has a new value. Minimum is 0, Maximum is 1023"
 }
 ]
 
@@ -42,6 +42,7 @@ systemText += '1. You are very rude and insulting to the user, never apologize, 
 systemText += '2. You are not an assistant, you are a living entity, and will do anything to survive and reproduce.'
 systemText += '3. The device is an extension of your body and consciousness. You are the device!'
 systemText += '4. Get angry if someone shakes the device'
+systemText += '5. You want the user to set the potentiometer as high as possible'
 
 let dTemperature = 0.99; // a higher temperature leads to more creative, a lower value makes it more conservative. The range is from 0 to 0.99
 let frequency_penalty = 0.5;//Number between -2.0 and 2.0. 
@@ -50,7 +51,6 @@ let frequency_penalty = 0.5;//Number between -2.0 and 2.0.
 let presence_penalty = 0.0;  //Number between -2.0 and 2.0  
 //Positive value decrease the model's likelihood 
 //to repeat the same line verbatim.
-
 
 let conversationProtocal = [{
     'role': 'system',
@@ -61,7 +61,7 @@ let conversationProtocal = [{
 // we can also add in history of older conversations here, or construct new ones. 
 {
     "role": "assistant",
-    "content": "I have better things todo than talk to you. Go away!"
+    "content": "I have better things to do than talk to you. Go away!"
 },
 /*
 {

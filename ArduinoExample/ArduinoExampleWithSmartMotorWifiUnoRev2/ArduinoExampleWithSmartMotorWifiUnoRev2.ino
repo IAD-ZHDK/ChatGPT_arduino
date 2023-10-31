@@ -18,8 +18,6 @@ byte NoBLECharacteristics = 4;  // this needs to match your total number of Char
 // you need to add all your Characteristics to the following array:
 BLECharacteristic characteristicList[] = { LEDCharacteristic, stringCharacteristic,  motorDegreesCharacteristic, motorSpeedCharacteristic};
 
-unsigned long previousMillisShake = 0;  // This is used to keep track of notify frequencies
-
 void setup() {
   Serial.begin(9600);
   delay(100);
