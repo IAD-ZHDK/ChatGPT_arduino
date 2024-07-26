@@ -26,12 +26,6 @@ function setupSpeech() {
 	}
 }
 
-function speakTest() {
-	var msg = new SpeechSynthesisUtterance('Hello world');
-	msg.rate = 0.7;
-	msg.pitch = 1;
-	window.speechSynthesis.speak(msg);
-}
 
 function TextToSpeech(s) {
 
@@ -70,7 +64,6 @@ function TextToSpeech(s) {
 			oSpeechRecognizer.stop();
 		}
 	});
-
 
 	oSpeechSynthesisUtterance.lang = "en-US";
 	oSpeechSynthesisUtterance.text = s;

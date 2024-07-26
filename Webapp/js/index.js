@@ -50,8 +50,6 @@ function keypressed(event) {
 	}
 }
 
-
-
 function submitPrompt(input, role) {
 	let prompt = document.getElementById("prompt");
 	if (input != "") {
