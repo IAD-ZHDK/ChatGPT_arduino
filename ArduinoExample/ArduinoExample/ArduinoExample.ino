@@ -80,6 +80,7 @@ void loopGPT() {                           // this will run in a constant loop
     }
   }
   // code for making the Poti value available over bluetooth
+  /*
   int newPotiValue = analogRead(potiPin);
   if (newPotiValue > potiValue + 15 || newPotiValue < potiValue - 15) {  // it has too have have a minimal change any direction
     if (currentMillis - previousMillisPoti >= 2000) { // only allow notfications maximum every 2 seconds
@@ -90,4 +91,5 @@ void loopGPT() {                           // this will run in a constant loop
       previousMillisPoti = currentMillis;
     }
   }
+  */
 }

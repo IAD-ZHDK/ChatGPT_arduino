@@ -12,6 +12,7 @@ body {
   font-family: monospace;
   line-height: 1.4em;
   font-size: 15;
+  background:#333333;
 }
 
 #terminal {
@@ -20,9 +21,8 @@ body {
   padding: 40px;
   position: absolute;
   height: 100%;
-  width: 100%;
+  width: 90%;
   color: white;
-  background:#333333;
 }
 
 #history { 

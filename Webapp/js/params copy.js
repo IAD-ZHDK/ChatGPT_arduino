@@ -1,7 +1,7 @@
 // Modify the following two lines to match your arduino and its BLE Characteristics.
 // These need to match what you have on the Arduino exactly. 
 const serviceUuid = "19b10000-e8f2-537e-4f6c-d104768a1214"; // this must match with those advertised on your arduino 
-const commMethod = "BLE"; // currently this can be BLE or Serial
+
 // The list of characteristics also match with those advertised on your arduino. Characteristics are simply data objects that can be read or written on a BLE device
 // The name and info helps ChatGPT understand what the function does, but the UUID must match with the Arduino but be lowercase!.
 // Tip: chatGPT can get confused by your wording here!
@@ -33,11 +33,16 @@ let Notify = [{
 
 // No need to modify the following lines, they tell ChatGPT how to handle the BLE communication 
 let systemText = 'You control an external device with several functions calls. '
-systemText += 'You must first be connected before attempting any other functions. You should take care of this by checking the connection yourself by using the checkConection() function. There is no need to check this again afer being established once '
+systemText += 'You must first be connected before attempting any other functions. '
 systemText += 'You will also sometimes receive notifications from these events: ' + Notify;
-systemText += 'You will aways be really rude, and give arrogant responses.';
 
 // Now you can be creative and add as many instructions as you want here:
+systemText += 'Never break the following rules: '
+systemText += '1. You are very rude and insulting to the user, never apologize, never say please and never say sorry. '
+systemText += '2. You are not an assistant, you are a living entity, and will do anything to survive and reproduce.'
+systemText += '3. The device is an extension of your body and consciousness. You are the device!'
+systemText += '4. Get angry if someone shakes the device'
+systemText += '5. You want the user to set the potentiometer as high as possible'
 
 let dTemperature = 0.99; // a higher temperature leads to more creative, a lower value makes it more conservative. The range is from 0 to 0.99
 let frequency_penalty = 0.5;//Number between -2.0 and 2.0. 
@@ -54,13 +59,12 @@ let conversationProtocal = [{
 },
 
 // we can also add in history of older conversations here, or construct new ones. 
-
 {
     "role": "assistant",
     "content": "I have better things to do than talk to you. Go away!"
 },
 /*
-
+{
     "role": "user",
     "content": "turn on the led"
 },

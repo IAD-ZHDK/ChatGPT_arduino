@@ -1,18 +1,33 @@
 
+import BLECommunication from '/js/Components/BLECommunication.js';
+//import SerialCommunication from '/js/Components/SerialCommunication.js';
+import ChatGPTAPI from '/js/Components/ChatGPTAPI.js';
+
+let communicationMethod = null;
+let ChatGPT = null;
 let userActive = false;
 
 // outputs 
 window.onload = function () {
-	setupSpeech();
-	setupChatGPTFunctions();
-	textLogerln('<b>Welcome to ChatGPT BLE Arduino Connector</b>', "info");
-	textLogerln("model: " + sModel, "info");
 
+	if (commMethod == "BLE") {
+		communicationMethod = new BLECommunication();
+	} else if (commMethod == "Serial") {
+		communicationMethod = new SerialCommunication();
+	} else {
+		communicationMethod = new SerialCommunication();
+	}
+
+	setupSpeech();
+	ChatGPT = new ChatGPTAPI(communicationMethod);
+	textLogerln('<b>Welcome to ChatGPT BLE Arduino Connector</b>', "info");
+	textLogerln("model: " + ChatGPT.getModel(), "info");
 	textLogerln("🎤 speech recognition is " + ((chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
-	textLogerln("🛜 Press Ctrl+b to turn on BLE, or ask ChatGPT to connect", "info");
+	textLogerln("🛜 Press Ctrl+b to connect to device, or ask ChatGPT to connect", "info");
 	textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
 }
+
 
 
 
@@ -35,18 +50,17 @@ function keypressed(event) {
 		}
 	}
 
-
 	// turn sound on "Ctrl+S"
 	if (event.key == "s" && event.ctrlKey || event.key == "S" && event.ctrlKey) {
 		SpeechToText();
 		textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + " 🎤 ", "info");
 	}
 
-	// connect to BLE with "Ctrl+b"
+	// connect to Device with "Ctrl+b"
 	if (event.key == "b" && event.ctrlKey || event.key == "B" && event.ctrlKey) {
 		console.log("b clicked")
-		functionHandler["connectToDevice"]()
-		textLogerln("trying to connect to ble", "info");
+		communicationMethod.connect()
+		textLogerln("trying to connect to device", "info");
 	}
 }
 
@@ -58,7 +72,7 @@ function submitPrompt(input, role) {
 		let thinking = document.getElementById("thinking");
 		thinking.style.display = "inline-block";
 		prompt.style.display = "none"
-		sendChatGPT(input, role).then((returnObject) => {
+		ChatGPT.send(input, role).then((returnObject) => {
 			// handle nested promises that might be returned
 			recievedMessage(returnObject)
 		}).catch(error => textLogerln(error.message, "assistant"));

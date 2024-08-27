@@ -20,7 +20,7 @@ function setupSpeech() {
 		speechSynthesis.onvoiceschanged = function () {
 			oVoices = window.speechSynthesis.getVoices();
 			for (var i = 0; i < oVoices.length; i++) {
-				console.log(i + " " + oVoices[i].name)
+				//	console.log(i + " " + oVoices[i].name)
 			}
 		};
 	}
