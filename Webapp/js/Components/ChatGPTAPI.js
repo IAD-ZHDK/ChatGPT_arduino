@@ -14,53 +14,64 @@ class ChatGPTAPI {
 		this.comMethod = communicationMethod;
 		this.MaxTokens = 2048;
 		this.UserId = "1";
-		// format all functionList and add to chatGPTs function list
+		// format all comm functions and add to chatGPTs function list
 
 		for (const key in functionList) {
-	
-			let newFunction = {
-				"name": "",
-				"description": "",
-				"parameters": {
-					"type": "object",
-					"properties": {
-						"value": {
-							"type": "",
-							"description": "",
-						},
-					}
-				},
-			};
-	
-			let name = key
-			let UUID = ""
-			let dataType = ""
-			let description = ""
-	
-			try {
-				dataType = functionList[key].dataType
-			} catch (e) {
-				console.log("type not defined!" + e);
-			}
-	
-			try {
-				UUID = functionList[key].UUID
-			} catch (e) {
-				console.log("UUID not defined" + e);
-			}
-			try {
-				description = functionList[key].description
-			} catch (e) {
-				console.log("info not defined!" + e);
-			}
-			newFunction.name = name
-			newFunction.description = description
-			newFunction.parameters.properties.value.type = dataType
-			newFunction.parameters.properties.value.description = description
-	
+			let newFunction = this.formatFunctions(functionList, key) 
 			// add new function to list
 			this.additionalFunctions.push(newFunction)
 		}
+		// format all local functions 
+		for (const key in local_functionList) {
+			let newFunction = this.formatFunctions(local_functionList, key) 
+			// add new function to list
+			this.additionalFunctions.push(newFunction)
+		}
+		console.log(this.additionalFunctions)
+	}
+
+	formatFunctions(list, key) {
+
+		let newFunction = {
+			"name": "",
+			"description": "",
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"value": {
+						"type": "",
+						"description": "",
+					},
+				}
+			},
+		};
+
+		let name = key
+		let UUID = ""
+		let dataType = ""
+		let description = ""
+
+		try {
+			dataType = list[key].dataType
+		} catch (e) {
+			console.log("type not defined!" + e);
+		}
+
+		try {
+			UUID = list[key].UUID
+		} catch (e) {
+			console.log("UUID not defined" + e);
+		}
+		try {
+			description = list[key].description
+		} catch (e) {
+			console.log("info not defined!" + e);
+		}
+		newFunction.name = name
+		newFunction.description = description
+		newFunction.parameters.properties.value.type = dataType
+		newFunction.parameters.properties.value.description = description
+		return newFunction
 	}
 
 	getModel() {
@@ -180,7 +191,15 @@ class ChatGPTAPI {
 									}
 									resolve(returnObject);
 								})
-							}  else {
+
+							}  else if (local_functionList.hasOwnProperty(functionName)) {
+							// check if it's a local function 
+							this.callFunctionByName(functionName, window, functionArguments)
+							returnObject.message = "function_call "+functionName+"";
+							returnObject.role = "error"
+							resolve(returnObject);
+						} else {
+
 								returnObject.message = "Error: function does not exist";
 								returnObject.role = "error"
 								resolve(returnObject);
@@ -282,6 +301,17 @@ class ChatGPTAPI {
 	
 	];
 
+
+	callFunctionByName(functionName, context, ...args) {
+		var namespaces = functionName.split(".");
+		var func = namespaces.pop();
+		context = context || window;
+		for(var i = 0; i < namespaces.length; i++) {
+		  context = context[namespaces[i]];
+		}
+		return context[func].apply(context, args);
+	  }
+	  
 }
 
 

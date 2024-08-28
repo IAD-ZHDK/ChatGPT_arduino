@@ -10,8 +10,14 @@ let functionList = {
     get_LED: { uuid: '19b10001-e8f2-537e-4f6c-d104768a1214', commType: "read", dataType: 'boolean', description: '0 is off, 1 is on' },
     set_motor_position: { uuid: '19b10012-e8f2-537e-4f6c-d104768a1214', commType: "write", dataType: 'number', description: 'writable only. sets the motors position in degrees. There is no maximum value or limit, you can set the value to be over 400000' },
     set_motor_speed: { uuid: '19b10019-e8f2-537e-4f6c-d104768a1214', commType: "write", dataType: 'integer', description: 'writable only. sets the motors speed in RPM.' },
-    get_IMU: { uuid: '19b10014-e8f2-537e-4f6c-d104768a1214', commType: "read", dataType: 'integer', info: 'readable only' },
+    get_IMU: { uuid: '19b10014-e8f2-537e-4f6c-d104768a1214', commType: "read", dataType: 'integer', description: 'readable only' },
     set_String: { uuid: '19b10018-e8f2-537e-4f6c-d104768a1214', commType: "write", dataType: 'string', description: 'writable only, maximum 32 ASCI characters' },
+}
+
+// This list of functions is for allowing ChatGPT to connect with local (javascript) functions
+// This could be used for accessing the webcam, or doing something within the browser window
+let local_functionList = {
+    start_party: { dataType: 'boolean', description: '0 is off, 1 is on. This function creates a party effect in the browser' },
 }
 
 // The following list of objects holds Characteristics that will notify ChatGPT if they are updated by he external device. 
@@ -54,12 +60,12 @@ let conversationProtocal = [{
 },
 
 // we can also add in history of older conversations here, or construct new ones. 
+/*
 
 {
     "role": "assistant",
     "content": "I have better things to do than talk to you. Go away!"
 },
-/*
 
     "role": "user",
     "content": "turn on the led"
