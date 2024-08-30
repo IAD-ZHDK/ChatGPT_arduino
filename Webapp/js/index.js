@@ -1,15 +1,16 @@
-
 import BLECommunication from '/js/Components/BLECommunication.js';
 //import SerialCommunication from '/js/Components/SerialCommunication.js';
 import ChatGPTAPI from '/js/Components/ChatGPTAPI.js';
+import View from '/js/View.js';
 
 let communicationMethod = null;
 let ChatGPT = null;
 let userActive = false;
+let screenView = null;
 
 // outputs 
 window.onload = function () {
-
+	
 	if (commMethod == "BLE") {
 		communicationMethod = new BLECommunication();
 	} else if (commMethod == "Serial") {
@@ -17,18 +18,16 @@ window.onload = function () {
 	} else {
 		communicationMethod = new SerialCommunication();
 	}
-
 	setupSpeech();
+	screenView = new View();
 	ChatGPT = new ChatGPTAPI(communicationMethod);
-	textLogerln('<b>Welcome to ChatGPT BLE Arduino Connector</b>', "info");
-	textLogerln("model: " + ChatGPT.getModel(), "info");
-	textLogerln("🎤 speech recognition is " + ((chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
-	textLogerln("🛜 Press Ctrl+b to connect to device, or ask ChatGPT to connect", "info");
-	textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
+	screenView.textLogerln('<b>Welcome to ChatGPT BLE Arduino Connector</b>', "info");
+	screenView.textLogerln("model: " + ChatGPT.getModel(), "info");
+	screenView.textLogerln("🎤 speech recognition is " + ((chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
+	screenView.textLogerln("🛜 Press Ctrl+b to connect to device, or ask ChatGPT to connect", "info");
+	screenView.textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
 }
-
-
 
 
 document.addEventListener("click", function () {
@@ -53,21 +52,21 @@ function keypressed(event) {
 	// turn sound on "Ctrl+S"
 	if (event.key == "s" && event.ctrlKey || event.key == "S" && event.ctrlKey) {
 		SpeechToText();
-		textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + " 🎤 ", "info");
+		screenView.textLogerln("speech recognition is " + ((chkSpeak) ? "on" : "off") + " 🎤 ", "info");
 	}
 
 	// connect to Device with "Ctrl+b"
 	if (event.key == "b" && event.ctrlKey || event.key == "B" && event.ctrlKey) {
 		console.log("b clicked")
 		communicationMethod.connect()
-		textLogerln("trying to connect to device", "info");
+		screenView.textLogerln("trying to connect to device", "info");
 	}
 }
 
 function submitPrompt(input, role) {
 	let prompt = document.getElementById("prompt");
 	if (input != "") {
-		textLogerln(input, role)
+		screenView.textLogerln(input, role)
 		userActive = false;
 		let thinking = document.getElementById("thinking");
 		thinking.style.display = "inline-block";
@@ -75,7 +74,7 @@ function submitPrompt(input, role) {
 		ChatGPT.send(input, role).then((returnObject) => {
 			// handle nested promises that might be returned
 			recievedMessage(returnObject)
-		}).catch(error => textLogerln(error.message, "assistant"));
+		}).catch(error => screenView.textLogerln(error.message, "assistant"));
 		input = ''; // clear prompt box
 	}
 
@@ -87,7 +86,7 @@ function submitPrompt(input, role) {
 	}
 	function recievedMessage(returnObject) {
 		// TODO: protect against endless recursion
-		textLogerln(returnObject.message, returnObject.role)
+		screenView.textLogerln(returnObject.message, returnObject.role)
 		if (returnObject.role == "assistant") {
 			TextToSpeech(returnObject.message);
 		}
@@ -100,23 +99,4 @@ function submitPrompt(input, role) {
 			endExchange()
 		}
 	}
-}
-
-function textLoger(string, agent) {
-	let textBox = document.getElementById('history');
-	try {
-		// textBox.innerHTML += string;
-		let currentLine;
-		currentLine = document.createElement('span');
-		currentLine.classList.add(agent);
-		currentLine.innerHTML = string;
-		textBox.appendChild(currentLine);
-	} catch (e) {
-		console.log(e)
-	}
-}
-
-function textLogerln(string, agent) {
-	textLoger(string, agent)
-	textLoger('<br>', agent);
 }

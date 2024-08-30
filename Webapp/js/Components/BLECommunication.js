@@ -46,7 +46,7 @@ class BLECommunication extends ICommunicationMethod {
                 } else if (oldValue > notifyObject.value && notifyObject.checkOn == "fall") {
                     //falling
                     console.log("value falling")
-                       // todo:improve the handling of notifcations 
+                    // todo:improve the handling of notifcations 
                    // this.submitPrompt(JSON.stringify(updateObject), "system");
                 }
             } else {
