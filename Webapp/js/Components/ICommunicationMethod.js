@@ -1,5 +1,6 @@
 class ICommunicationMethod {
-    constructor() {
+    constructor(submitPrompt) {
+        this.submitPrompt = submitPrompt;
     }
     connect() {
         throw new Error("Method 'connect()' must be implemented.");

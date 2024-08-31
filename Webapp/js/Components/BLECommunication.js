@@ -42,17 +42,17 @@ class BLECommunication extends ICommunicationMethod {
                     // rising
                     console.log("value rising")
                     // todo:improve the handling of notifcations 
-                    //this.submitPrompt(JSON.stringify(updateObject), "system");
+                    this.submitPrompt(JSON.stringify(updateObject), "system");
                 } else if (oldValue > notifyObject.value && notifyObject.checkOn == "fall") {
                     //falling
                     console.log("value falling")
                     // todo:improve the handling of notifcations 
-                   // this.submitPrompt(JSON.stringify(updateObject), "system");
+                   this.submitPrompt(JSON.stringify(updateObject), "system");
                 }
             } else {
                 console.log("value change")
                            // todo:improve the handling of notifcations 
-               // this.submitPrompt(JSON.stringify(updateObject), "system");
+               this.submitPrompt(JSON.stringify(updateObject), "system");
             }
         }
     }
@@ -75,7 +75,7 @@ class BLECommunication extends ICommunicationMethod {
             description: "disconnected from BLE device",
         }
         this.bleConnected = false;
-        // todo:   submitPrompt(JSON.stringify(updateObject), "system");
+            this.submitPrompt(JSON.stringify(updateObject), "system");
     }
     connect(data) {
         return new Promise((resolve, reject) => {

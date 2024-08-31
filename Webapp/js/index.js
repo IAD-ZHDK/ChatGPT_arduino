@@ -1,7 +1,7 @@
-import BLECommunication from '/js/Components/BLECommunication.js';
-//import SerialCommunication from '/js/Components/SerialCommunication.js';
-import ChatGPTAPI from '/js/Components/ChatGPTAPI.js';
-import View from '/js/View.js';
+import BLECommunication from './Components/BLECommunication.js';
+import SerialCommunication from './Components/SerialCommunication.js';
+import ChatGPTAPI from './Components/ChatGPTAPI.js';
+import View from './View.js';
 
 let communicationMethod = null;
 let ChatGPT = null;
@@ -12,11 +12,11 @@ let screenView = null;
 window.onload = function () {
 	
 	if (commMethod == "BLE") {
-		communicationMethod = new BLECommunication();
+		communicationMethod = new BLECommunication(submitPrompt);
 	} else if (commMethod == "Serial") {
-		communicationMethod = new SerialCommunication();
+		communicationMethod = new SerialCommunication(submitPrompt);
 	} else {
-		communicationMethod = new SerialCommunication();
+		communicationMethod = new SerialCommunication(submitPrompt);
 	}
 	setupSpeech();
 	screenView = new View();
