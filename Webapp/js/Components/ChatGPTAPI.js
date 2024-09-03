@@ -160,17 +160,20 @@ class ChatGPTAPI {
 									functionReturnPromise = method.call(sComMethod, functionArguments); // Call the method with arguments
 								} else {
 									console.log(functionName + " exists in functionList!")
-									console.log("arguments: ")
-									console.log(functionArguments)
 									functionArguments.uuid = functionList[functionName].uuid
 									functionArguments.dataType = functionList[functionName].dataType
+									functionArguments.name = functionName;
+
+									console.log("arguments: ")
+									console.log(functionArguments)
+
 									if (functionList[functionName].commType == "readWrite" || functionList[functionName].commType == "write") {
 										const method = sComMethod.getMethod("write");
 										functionReturnPromise =  method.call(sComMethod, functionArguments); // Call the method with arguments
 									} else {
 										// read only 
 										const method = sComMethod.getMethod("read");
-										functionReturnPromise =  method.call(sComMethod, functionArguments); // Call the method with arguments
+										functionReturnPromise = method.call(sComMethod, functionArguments); // Call the method with arguments
 									}
 	
 								}

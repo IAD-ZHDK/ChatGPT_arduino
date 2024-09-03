@@ -15,7 +15,7 @@ byte NoBLECharacteristics = 5;  // this needs to match your total number of Char
 // you need to add all your Characteristics to the following array:
 BLECharacteristic characteristicList[] = { LEDCharacteristic, accelerationCharacteristic, shakeCharacteristic, stringCharacteristic };
 
-unsigned long previousMillisShake = 0;  // This is used to keep track of notify frequencies
+                                                                         
 int potiValue = 0;
 unsigned long previousMillisPoti = 0;  // This is used to keep track of notify frequencies
 #define potiPin A0

@@ -7,11 +7,11 @@
 
 // Variables
 bool ledState = false;
-float motorPosition = 0.0;
+float motorPosition = 1.0;
 int motorSpeed = 0;
-int imuValue = 0;
+int imuValue = 5;
 unsigned long previousMillisShake = 0;  // This is used to keep track of notify frequencies
-String storedString = "";
+String storedString = "bas";
 
 void setup() {
   Serial.begin(9600);
@@ -64,17 +64,22 @@ void get_LED() {
 }
 
 void set_motor_position(float position) {
+  Serial.println(position);
   motorPosition = position;
   // Add code to set motor position
-}
+}             
+
+void get_motor_position() {
+    notify("get_motor_position", motorPosition);
+  // Add code to set motor position
+}             
 
 void set_motor_speed(int speed) {
   motorSpeed = speed;
   // Add code to set motor speed
 }
 
-int get_IMU() {
-  // Add code to read IMU value
+void get_IMU() {
   notify("get_IMU", imuValue);
 }
 
@@ -82,21 +87,30 @@ void set_String(String str) {
   storedString = str;
 }
 
+void get_String(String str) {
+  storedString = str;
+  notify("get_String", storedString);
+}
+
+
 
 struct Command {
   String name;
   String dataType;
+  void (*funcVoid)();
   void (*funcBool)(bool);
   void (*funcInt)(int);
   void (*funcFloat)(float);
   void (*funcString)(String);
-};
+};                                       
 
 Command commandFunctions[] = {
   { "set_LED", "bool", set_LED},
   { "get_LED", "bool", get_LED},
-  { "set_motor_position", "float", },
+  { "set_motor_position", "float", set_motor_position},
   { "set_motor_speed", "int", set_motor_speed},
-  { "get_IMU", "int", get_IMU},
-  { "set_String", "string", set_String}
+  { "get_motor_position", "float", get_motor_position},
+  { "get_IMU", "void", get_IMU},
+  { "set_String", "string", set_String},
+  { "get_String", "string", get_String}
 };

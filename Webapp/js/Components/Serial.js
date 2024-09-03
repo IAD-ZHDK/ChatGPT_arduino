@@ -267,7 +267,6 @@ export const SerialEvents = Object.freeze({
     async open(serialOptions = { baudRate: 9600 }) {
   
       try {
-  
         // Open the serial port
         // This function takes in a SerialOptions dictionary where baudRate is the only required member
         // https://developer.mozilla.org/en-US/docs/Web/API/SerialPort/open
@@ -296,13 +295,11 @@ export const SerialEvents = Object.freeze({
           try {
             while (true) {
               const { value, done } = await this.serialReader.read();
-  
               if (done) {
                 // Allow the serial port to be closed later.
                 this.serialReader.releaseLock();
                 break;
               }
-  
               if (value) {
                 // console.log("Serial received:", value);
                 this.fireEvent(SerialEvents.DATA_RECEIVED, value);
