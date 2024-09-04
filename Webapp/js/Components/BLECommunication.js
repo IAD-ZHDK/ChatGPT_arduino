@@ -4,7 +4,7 @@ class BLECommunication extends ICommunicationMethod {
 
     constructor() {
         super();
-        this.bleConnected = false;
+        this.connected = false;
         this.myCharacteristics = [];
         // Other initializations
         this.onDisconnected = this.onDisconnected.bind(this);
@@ -61,8 +61,8 @@ class BLECommunication extends ICommunicationMethod {
     checkConection() {
         return new Promise((resolve, reject) => {
             let returnObject = {
-                description: "BLE connection",
-                value: this.bleConnected,
+                description: "checkConection",
+                value: this.connected,
             }
             resolve(returnObject);
         })
@@ -74,7 +74,7 @@ class BLECommunication extends ICommunicationMethod {
         let updateObject = {
             description: "disconnected from BLE device",
         }
-        this.bleConnected = false;
+        this.connected = false;
             this.submitPrompt(JSON.stringify(updateObject), "system");
     }
     connect(data) {
@@ -107,7 +107,7 @@ class BLECommunication extends ICommunicationMethod {
                     return server.getPrimaryService(serviceUuid);
                 })
                 .then(service => {
-                    this.bleConnected = true;
+                    this.connected = true;
                     console.log('Getting all Characteristics...');
                     return service.getCharacteristics();
                 })
@@ -132,8 +132,8 @@ class BLECommunication extends ICommunicationMethod {
                         console.log(characteristics[c]);
                     }
                     let returnObject = {
-                        description: "BLE connection",
-                        value: this.bleConnected,
+                        description: "Connected",
+                        value: this.connected,
                     }
                     resolve(returnObject);
                 })

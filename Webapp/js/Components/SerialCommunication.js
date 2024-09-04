@@ -2,8 +2,9 @@ import ICommunicationMethod from './ICommunicationMethod.js';
 import { Serial, SerialEvents } from './Serial.js';
 
 class SerialCommunication extends ICommunicationMethod {
-  constructor() {
+  constructor(submitPrompt) {
     super();
+    this.submitPrompt = submitPrompt;
     this.connected = false;
     this.serialOptions = { baudRate: 9600 }
     // Setup Web Serial using serial.js
@@ -17,7 +18,7 @@ class SerialCommunication extends ICommunicationMethod {
 
   connect() {
     let returnObject = {
-      description: "Serial connection",
+      description: "Connected",
       value: true,
     }
     return new Promise((resolve, reject) => {
@@ -130,7 +131,7 @@ class SerialCommunication extends ICommunicationMethod {
   checkConection() {
     return new Promise((resolve, reject) => {
       let returnObject = {
-        description: "Serial connection",
+        description: "Connected",
         value: this.connected,
       }
       resolve(returnObject);
@@ -145,7 +146,7 @@ class SerialCommunication extends ICommunicationMethod {
   }
   /// 
   onSerialErrorOccurred(eventSender, error) {
-    this.connected = false;
+   // this.connected = false;
     console.log("onSerialErrorOccurred");
     console.log(error);
   }
@@ -174,8 +175,8 @@ class SerialCommunication extends ICommunicationMethod {
       const value = parts[1];
 
       let notifyObject = Notify.find(notifyObj => notifyObj.name === commandName);
-
       if (notifyObject != null) {
+        console.log("there is a matching function in the Notify list")
         // there is a matching function in the Notify list
         let oldValue = notifyObject.value;
         notifyObject.value = value;
@@ -200,13 +201,16 @@ class SerialCommunication extends ICommunicationMethod {
           }
         } else {
           console.log("value change")
+          console.log(updateObject)
+          console.log(JSON.stringify(updateObject))
+          console.log(this.submitPrompt)
           // todo:improve the handling of notifcations 
           this.submitPrompt(JSON.stringify(updateObject), "system");
         }
       } else {
         let notifyObject = Object.keys(functionList).find(key => key === commandName);
         if (notifyObject != null) {
-
+          console.log("there is a matching function in the function list")
           let updateObject = {
             description: commandName,
             value: value,

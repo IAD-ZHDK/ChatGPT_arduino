@@ -64,7 +64,6 @@ void get_LED() {
 }
 
 void set_motor_position(float position) {
-  Serial.println(position);
   motorPosition = position;
   // Add code to set motor position
 }             
@@ -87,8 +86,7 @@ void set_String(String str) {
   storedString = str;
 }
 
-void get_String(String str) {
-  storedString = str;
+void get_String() {
   notify("get_String", storedString);
 }
 
@@ -97,20 +95,22 @@ void get_String(String str) {
 struct Command {
   String name;
   String dataType;
-  void (*funcVoid)();
-  void (*funcBool)(bool);
-  void (*funcInt)(int);
-  void (*funcFloat)(float);
-  void (*funcString)(String);
+    union {
+    void (*funcVoid)();
+    void (*funcBool)(bool);
+    void (*funcInt)(int);
+    void (*funcFloat)(float);
+    void (*funcString)(String);
+   };
 };                                       
-
+// {"function_name", "writeDataType", function}
 Command commandFunctions[] = {
   { "set_LED", "bool", set_LED},
-  { "get_LED", "bool", get_LED},
+  { "get_LED", "none", get_LED},
   { "set_motor_position", "float", set_motor_position},
   { "set_motor_speed", "int", set_motor_speed},
-  { "get_motor_position", "float", get_motor_position},
-  { "get_IMU", "void", get_IMU},
+  { "get_motor_position", "none", get_motor_position},
+  { "get_IMU", "none", get_IMU},
   { "set_String", "string", set_String},
-  { "get_String", "string", get_String}
+  { "get_String", "none", get_String}
 };

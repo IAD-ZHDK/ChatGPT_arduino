@@ -8,9 +8,47 @@ let ChatGPT = null;
 let userActive = false;
 let screenView = null;
 
-// outputs 
+
+function submitPrompt(input, role) {
+	let prompt = document.getElementById("prompt");
+	if (input != "") {
+		screenView.textLogerln(input, role)
+		userActive = false;
+		let thinking = document.getElementById("thinking");
+		thinking.style.display = "inline-block";
+		prompt.style.display = "none"
+		ChatGPT.send(input, role).then((returnObject) => {
+			// handle nested promises that might be returned
+			recievedMessage(returnObject)
+		}).catch(error => screenView.textLogerln(error.message, "assistant"));
+		input = ''; // clear prompt box
+	}
+
+	function endExchange() {
+		userActive = true;
+		prompt.value = ''; // clear prompt box
+		thinking.style.display = "none";
+		prompt.style.display = "inline-block";
+	}
+	function recievedMessage(returnObject) {
+		// TODO: protect against endless recursion
+		screenView.textLogerln(returnObject.message, returnObject.role)
+		if (returnObject.role == "assistant") {
+			TextToSpeech(returnObject.message);
+		}
+		if (returnObject.promise != null) {
+			// there is another nested promise 
+			returnObject.promise.then((returnObject) => {
+				recievedMessage(returnObject)
+			})
+		} else {
+			endExchange()
+		}
+	}
+}
+
+
 window.onload = function () {
-	
 	if (commMethod == "BLE") {
 		communicationMethod = new BLECommunication(submitPrompt);
 	} else if (commMethod == "Serial") {
@@ -63,40 +101,3 @@ function keypressed(event) {
 	}
 }
 
-function submitPrompt(input, role) {
-	let prompt = document.getElementById("prompt");
-	if (input != "") {
-		screenView.textLogerln(input, role)
-		userActive = false;
-		let thinking = document.getElementById("thinking");
-		thinking.style.display = "inline-block";
-		prompt.style.display = "none"
-		ChatGPT.send(input, role).then((returnObject) => {
-			// handle nested promises that might be returned
-			recievedMessage(returnObject)
-		}).catch(error => screenView.textLogerln(error.message, "assistant"));
-		input = ''; // clear prompt box
-	}
-
-	function endExchange() {
-		userActive = true;
-		prompt.value = ''; // clear prompt box
-		thinking.style.display = "none";
-		prompt.style.display = "inline-block";
-	}
-	function recievedMessage(returnObject) {
-		// TODO: protect against endless recursion
-		screenView.textLogerln(returnObject.message, returnObject.role)
-		if (returnObject.role == "assistant") {
-			TextToSpeech(returnObject.message);
-		}
-		if (returnObject.promise != null) {
-			// there is another nested promise 
-			returnObject.promise.then((returnObject) => {
-				recievedMessage(returnObject)
-			})
-		} else {
-			endExchange()
-		}
-	}
-}

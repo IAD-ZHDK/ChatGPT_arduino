@@ -12,7 +12,6 @@ void processCommand(String command) {
         if (arg == "true" || arg == "false") {
           argument = "true" ? 1 : 0;
         }
-         Serial.println(argument);
         commandFunctions[i].funcBool(argument);
       } else if (commandFunctions[i].dataType == "int") {
         int argument = arg.toInt();
@@ -22,7 +21,7 @@ void processCommand(String command) {
         commandFunctions[i].funcFloat(argument);
       } else if (commandFunctions[i].dataType == "string") {
         commandFunctions[i].funcString(arg);
-      } else if (commandFunctions[i].dataType == "void") {
+      } else if (commandFunctions[i].dataType == "none") {
         commandFunctions[i].funcVoid();
       }  
       else {

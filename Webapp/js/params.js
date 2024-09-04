@@ -11,6 +11,7 @@ let functionList = {
     set_motor_speed: { commType: "write", dataType: 'integer', description: 'writable only. sets the motors speed in RPM.' },
     get_IMU: {commType: "read", dataType: 'integer', description: 'readable only' },
     set_String: {commType: "write", dataType: 'string', description: 'writable only, maximum 32 ASCI characters' },
+    get_String: {commType: "read", dataType: 'string', description: 'readable only, maximum 32 ASCI characters' },
 }
 
 // The following list of objects holds Characteristics that will notify ChatGPT if they are updated by he external device. 
@@ -18,7 +19,7 @@ let functionList = {
 let Notify = [{
     name: 'shake', // the arduino example is setup to make a BLE notification if it is shaken.
     type: "boolean", // possible values are "boolean" and "int"
-    checkOn: "rise", // when chatGPT should be informed of change of boolean. possible values: 'rise', 'fall', 'change'. Only applicable to boolean values.
+    checkOn: "change", // When chatGPT should be informed of change of boolean. possible values: 'rise', 'fall', 'change'. Only applicable to boolean values.
     info: "The device has been shaken!"
 },
 {
@@ -38,7 +39,7 @@ let local_functionList = {
 let systemText = 'You control an external device with several functions calls. '
 systemText += 'You must first be connected before attempting any other functions. You should take care of this by checking the connection yourself by using the checkConection() function. There is no need to check this again afer being established once '
 systemText += 'You will also sometimes receive notifications from these events: ' + Notify;
-systemText += 'You will aways be really rude, and give arrogant responses.';
+systemText += 'You will be very helpful, and offer advice is the api doesnt work as expected.';
 
 // Now you can be creative and add as many instructions as you want here:
 

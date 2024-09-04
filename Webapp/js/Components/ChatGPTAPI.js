@@ -8,7 +8,7 @@
 
 
 class ChatGPTAPI {
-    constructor(communicationMethod) {
+	constructor(communicationMethod) {
 		this.Url = "https://api.openai.com/v1/chat/completions" // gpt-4 is "https://api.openai.com/v1/completions";
 		this.Model = "gpt-4o-mini";
 		this.comMethod = communicationMethod;
@@ -17,13 +17,13 @@ class ChatGPTAPI {
 		// format all comm functions and add to chatGPTs function list
 
 		for (const key in functionList) {
-			let newFunction = this.formatFunctions(functionList, key) 
+			let newFunction = this.formatFunctions(functionList, key)
 			// add new function to list
 			this.additionalFunctions.push(newFunction)
 		}
 		// format all local functions 
 		for (const key in local_functionList) {
-			let newFunction = this.formatFunctions(local_functionList, key) 
+			let newFunction = this.formatFunctions(local_functionList, key)
 			// add new function to list
 			this.additionalFunctions.push(newFunction)
 		}
@@ -75,32 +75,30 @@ class ChatGPTAPI {
 	}
 
 	getModel() {
-        return this.Model;
-    }
+		return this.Model;
+	}
 
-	
+
 	send(sQuestion, role, funtionName) {
-		// there is an error with scope when this is called recurrently 
 		return new Promise((resolve, reject) => {
 			let sURL = this.Url
 			let sModel = this.Model
 			let sMaxTokens = this.MaxTokens
-			let sUserId =  this.UserId
+			let sUserId = this.UserId
 			let sadditionalFunctions = this.additionalFunctions
 			let sComMethod = this.comMethod
-			
+
 			let returnObject = {
 				message: null,
 				promise: null,
 				role: "assistant",
 			}
-	
+
 			if (sQuestion == "") {
-				alert("Type in your question!");
+				console.log("message content is emtpy!");
 				return;
 			}
-			console.log("sending message: " + sQuestion);
-			console.log("role: " + role);
+			console.log("role: " + role + " is sending message: " + sQuestion);
 
 			const oHttp = new XMLHttpRequest();
 
@@ -113,16 +111,14 @@ class ChatGPTAPI {
 			oHttp.setRequestHeader("Accept", "application/json");
 			oHttp.setRequestHeader("Content-Type", "application/json");
 			oHttp.setRequestHeader("Authorization", "Bearer " + OPENAI_API_KEY)
-	
+
 			oHttp.onreadystatechange = function () {
 				console.log("ready:" + oHttp.readyState)
 				if (oHttp.readyState === 4) {
-					//console.log(oHttp.status);
 					var oJson = {}
 					try {
 						oJson = JSON.parse(oHttp.responseText);
 					} catch (e) {
-		
 						reject(new Error("Error: " + e.message));
 					}
 					console.log(oJson)
@@ -136,13 +132,15 @@ class ChatGPTAPI {
 							//GPT-4
 							s = oJson.choices[0].message.content;
 						}
-	
+
 						s = oJson.choices[0].message.content;
-	
+
 						if (oJson.choices[0].finish_reason == "function_call") {
-							
 							console.log(oJson.choices[0].message.function_call)
-	
+
+							conversationProtocal.push(oJson.choices[0].message); // add the models response to the history
+
+
 							// we need to check if the function provided by LLM realy exist
 							let functionName = oJson.choices[0].message.function_call.name;
 							console.log("function_call, function name: " + functionName);
@@ -151,11 +149,11 @@ class ChatGPTAPI {
 							console.log("arguments:", functionArguments);
 
 							const method = sComMethod.getMethod(functionName);
-							
+
 							if (method || functionList.hasOwnProperty(functionName)) {
-	
+
 								let functionReturnPromise;
-	
+
 								if (method) {
 									functionReturnPromise = method.call(sComMethod, functionArguments); // Call the method with arguments
 								} else {
@@ -169,15 +167,14 @@ class ChatGPTAPI {
 
 									if (functionList[functionName].commType == "readWrite" || functionList[functionName].commType == "write") {
 										const method = sComMethod.getMethod("write");
-										functionReturnPromise =  method.call(sComMethod, functionArguments); // Call the method with arguments
+										functionReturnPromise = method.call(sComMethod, functionArguments); // Call the method with arguments
 									} else {
 										// read only 
 										const method = sComMethod.getMethod("read");
 										functionReturnPromise = method.call(sComMethod, functionArguments); // Call the method with arguments
 									}
-	
 								}
-							
+
 								functionReturnPromise.then(functionReturnObject => {
 									let formatedValue = '{\"' + functionReturnObject.description + '\": "' + functionReturnObject.value + '"}'
 									console.log(functionReturnObject)
@@ -195,20 +192,21 @@ class ChatGPTAPI {
 									resolve(returnObject);
 								})
 
-							}  else if (local_functionList.hasOwnProperty(functionName)) {
-							// check if it's a local function 
-							this.callFunctionByName(functionName, window, functionArguments)
-							returnObject.message = "function_call "+functionName+"";
-							returnObject.role = "error"
-							resolve(returnObject);
-						} else {
-
+							} else if (local_functionList.hasOwnProperty(functionName)) {
+								// check if it's a local function 
+								this.callFunctionByName(functionName, window, functionArguments)
+								returnObject.message = "function_call " + functionName + "";
+								returnObject.role = "function"
+								resolve(returnObject);
+							} else {
 								returnObject.message = "Error: function does not exist";
 								returnObject.role = "error"
 								resolve(returnObject);
 							}
+
+							
 						}
-	
+
 						if (s == "" || s == null) {
 							s = "No response";
 						} else {
@@ -225,7 +223,7 @@ class ChatGPTAPI {
 					}
 				}
 			}.bind(this);
-	
+
 
 			let data = {
 				model: sModel,
@@ -244,7 +242,7 @@ class ChatGPTAPI {
 				functions: sadditionalFunctions,
 				messages: conversationProtocal
 			}
-	
+
 			// add lattest prompt to protocal
 			if (funtionName) {
 				conversationProtocal.push({
@@ -260,21 +258,22 @@ class ChatGPTAPI {
 			}
 			// TODO: need to fix error handling if there is too many tokens or no internet
 			try {
-				oHttp.send(JSON.stringify(data));				
+				oHttp.send(JSON.stringify(data));
+				console.log("sending data to chatGPT", data)
 			} catch (e) {
 				returnObject.message = "Error fetching " + this.Url + ", check internet connection";
 				returnObject.role = "error"
 				resolve(returnObject);
 			}
-	
+
 		})
 	}
 
-	 
-	
-	
+
+
+
 	additionalFunctions = [
-	
+
 		{
 			"name": "checkConection",
 			"description": "check if the connection is turned on",
@@ -301,7 +300,7 @@ class ChatGPTAPI {
 				}
 			},
 		},
-	
+
 	];
 
 
@@ -309,12 +308,12 @@ class ChatGPTAPI {
 		var namespaces = functionName.split(".");
 		var func = namespaces.pop();
 		context = context || window;
-		for(var i = 0; i < namespaces.length; i++) {
-		  context = context[namespaces[i]];
+		for (var i = 0; i < namespaces.length; i++) {
+			context = context[namespaces[i]];
 		}
 		return context[func].apply(context, args);
-	  }
-	  
+	}
+
 }
 
 
