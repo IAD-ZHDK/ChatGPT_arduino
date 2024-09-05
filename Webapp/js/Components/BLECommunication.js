@@ -2,8 +2,8 @@ import ICommunicationMethod from './ICommunicationMethod.js';
 
 class BLECommunication extends ICommunicationMethod {
 
-    constructor() {
-        super();
+    constructor(submitPrompt) {
+        super(submitPrompt);
         this.connected = false;
         this.myCharacteristics = [];
         // Other initializations
@@ -42,31 +42,21 @@ class BLECommunication extends ICommunicationMethod {
                     // rising
                     console.log("value rising")
                     // todo:improve the handling of notifcations 
-                    this.submitPrompt(JSON.stringify(updateObject), "system");
+                    this.submitPrompt(JSON.stringify(updateObject));
                 } else if (oldValue > notifyObject.value && notifyObject.checkOn == "fall") {
                     //falling
                     console.log("value falling")
                     // todo:improve the handling of notifcations 
-                   this.submitPrompt(JSON.stringify(updateObject), "system");
+                   this.submitPrompt(JSON.stringify(updateObject));
                 }
             } else {
                 console.log("value change")
                            // todo:improve the handling of notifcations 
-               this.submitPrompt(JSON.stringify(updateObject), "system");
+               this.submitPrompt(JSON.stringify(updateObject));
             }
         }
     }
 
-
-    checkConection() {
-        return new Promise((resolve, reject) => {
-            let returnObject = {
-                description: "checkConection",
-                value: this.connected,
-            }
-            resolve(returnObject);
-        })
-    }
 
     onDisconnected(event) {
         // Object event.target is Bluetooth Device getting disconnected.
@@ -75,7 +65,7 @@ class BLECommunication extends ICommunicationMethod {
             description: "disconnected from BLE device",
         }
         this.connected = false;
-            this.submitPrompt(JSON.stringify(updateObject), "system");
+            this.submitPrompt(JSON.stringify(updateObject));
     }
     connect(data) {
         return new Promise((resolve, reject) => {

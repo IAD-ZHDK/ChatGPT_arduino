@@ -21,9 +21,17 @@ class ICommunicationMethod {
     onDisconnected() {
         throw new Error("Method 'disconnect()' must be implemented.");
     }
+
     checkConection() {
-        throw new Error("Method 'checkConection()' must be implemented.");
-    }
+        return new Promise((resolve, reject) => {
+          let returnObject = {
+            description: "Connected",
+            value: this.connected,
+          }
+          resolve(returnObject);
+        })
+      }
+    
 
     str2ab(str) {
         // converts string to array object

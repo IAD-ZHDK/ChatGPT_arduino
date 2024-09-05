@@ -1,9 +1,6 @@
-// Modify the following two lines to match your arduino and its BLE Characteristics.
 // These need to match what you have on the Arduino exactly. 
 const commMethod = "Serial"; // currently this can be BLE or Serial
-// The list of characteristics also match with those advertised on your arduino. Characteristics are simply data objects that can be read or written on a BLE device
-// The name and info helps ChatGPT understand what the function does, but the UUID must match with the Arduino but be lowercase!.
-// Tip: chatGPT can get confused by your wording here!
+// The list of functions should match those set up on the arduino 
 let functionList = {
     set_LED: {commType: "write", dataType: 'boolean', description: '0 is off, 1 is on' },
     get_LED: {commType: "read", dataType: 'boolean', description: '0 is off, 1 is on' },
@@ -14,8 +11,8 @@ let functionList = {
     get_String: {commType: "read", dataType: 'string', description: 'readable only, maximum 32 ASCI characters' },
 }
 
-// The following list of objects holds Characteristics that will notify ChatGPT if they are updated by he external device. 
-// These should also match the list of "Notify" Characteristics on your Arduino, but it wont do any harm if you have unused Characteristics in the list below. 
+// The following list of objects holds functions that will notify ChatGPT if they are updated 
+// These should also match the functions setu on your Arduino, but it wont do any harm if you have unused functions in the list below. 
 let Notify = [{
     name: 'shake', // the arduino example is setup to make a BLE notification if it is shaken.
     type: "boolean", // possible values are "boolean" and "int"
@@ -26,6 +23,12 @@ let Notify = [{
     name: 'Potentiometer',
     type: "int", // possible values are "boolean" and "int"
     info: "The Potentiometer has been updated, and has a new value. Minimum is 0, Maximum is 1023"
+},
+// note, the folowing notification example is trigered by the code running in the browser. This requires modification of the code in the JsFunctions.js file 
+{
+    name: 'star_pressed',
+    type: "boolean", // possible values are "boolean" and "int"
+    info: "* has been pressed on the keyboard. Sing a song about the Zurich Univesity of the Arts."
 }
 ]
 
@@ -38,7 +41,7 @@ let local_functionList = {
 // No need to modify the following lines, they tell ChatGPT how to handle the BLE communication 
 let systemText = 'You control an external device with several functions calls. '
 systemText += 'You must first be connected before attempting any other functions. You should take care of this by checking the connection yourself by using the checkConection() function. There is no need to check this again afer being established once '
-systemText += 'You will also sometimes receive notifications from these events: ' + Notify;
+systemText += 'You will also sometimes receive notifications from these events: ' + JSON.stringify(Notify);
 systemText += 'You will be very helpful, and offer advice is the api doesnt work as expected.';
 
 // Now you can be creative and add as many instructions as you want here:

@@ -9,10 +9,11 @@ class View  {
 	let textBox = document.getElementById('history');
 	try {
 		// textBox.innerHTML += string;
+		const formattedString = string.replace(/\n/g, '<br>');
 		let currentLine;
 		currentLine = document.createElement('span');
 		currentLine.classList.add(agent);
-		currentLine.innerHTML = string;
+		currentLine.innerHTML = formattedString;
 		textBox.appendChild(currentLine);
 	} catch (e) {
 		console.log(e)

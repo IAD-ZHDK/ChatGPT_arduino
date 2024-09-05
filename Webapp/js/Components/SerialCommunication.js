@@ -3,9 +3,10 @@ import { Serial, SerialEvents } from './Serial.js';
 
 class SerialCommunication extends ICommunicationMethod {
   constructor(submitPrompt) {
-    super();
-    this.submitPrompt = submitPrompt;
+    super(submitPrompt);
     this.connected = false;
+    this.pendingReadPromise = null;
+    this.pendingReadResolve = null;
     this.serialOptions = { baudRate: 9600 }
     // Setup Web Serial using serial.js
     this.serial = new Serial();
@@ -25,6 +26,8 @@ class SerialCommunication extends ICommunicationMethod {
       console.log('Requesting Serial Device...');
       if (!this.serial.isOpen()) {
         this.serial.connectAndOpen(null, this.serialOptions).then(() => {
+          // todo: this.serial.isOpen returns null at this point
+          returnObject.value = this.serial.isOpen();
           resolve(returnObject);
         }).catch(error => {
           returnObject.description = "Error";
@@ -44,13 +47,33 @@ class SerialCommunication extends ICommunicationMethod {
     });
   }
 
+  checkConection() {
+    return new Promise((resolve, reject) => {
+      let returnObject = {
+        description: "Connected",
+        value: this.connected,
+      }
+      if (this.serialConnectec() == false) {
+        returnObject.value = false;
+      }
+      resolve(returnObject);
+    })
+  }
+  serialConnectec() {
+    if (!this.serial || !this.serial.isOpen) {
+      this.connected = false;
+      return false
+    } else {
+      this.connected = true;
+      return true
+    }
+  }
   write(data) {
     let returnObject = {
       description: "Writing to Serial",
       value: "",
     }
 
-    data.resolved = false; // use this for keeping track of resolution 
     //
     console.log("write data", data);
 
@@ -58,10 +81,9 @@ class SerialCommunication extends ICommunicationMethod {
 
     return new Promise((resolve, reject) => {
 
-      if (!this.serial || !this.serial.isOpen) {
+      if (this.checkSerialConection == false) {
         console.log('Port is not open');
-        returnObject.description = 'Port is not open'
-        resolve(returnObject);
+        resolve(this.checkConection());
       }
       console.log('Writing to Serial...', dataToSend);
       this.serial.write(dataToSend, (err) => {
@@ -100,7 +122,7 @@ class SerialCommunication extends ICommunicationMethod {
 
   read(data) {
     let returnObject = {
-      description: "Getting data from device, notifying when done",
+      description: "",
       value: "",
     }
 
@@ -110,11 +132,12 @@ class SerialCommunication extends ICommunicationMethod {
     let dataToSend = "" + data.name;
 
     return new Promise((resolve, reject) => {
+      this.pendingReadPromise = true;
+      this.pendingReadResolve = resolve;
 
-      if (!this.serial || !this.serial.isOpen) {
+      if (this.serialConnectec() == false) {
         console.log('Port is not open');
-        returnObject.description = 'Port is not open'
-        resolve(returnObject);
+        resolve(checkConection());
       }
       console.log('Writing to Serial...', dataToSend);
       this.serial.write(dataToSend, (err) => {
@@ -124,29 +147,18 @@ class SerialCommunication extends ICommunicationMethod {
           resolve(returnObject);
         }
       });
-      resolve(returnObject);
     });
-  }
-
-  checkConection() {
-    return new Promise((resolve, reject) => {
-      let returnObject = {
-        description: "Connected",
-        value: this.connected,
-      }
-      resolve(returnObject);
-    })
   }
 
   async closePort() {
     if (this.serial.isOpen()) {
-      await this.serial.close(); event
-      this.connected = true;
+      await this.serial.close(); 
+      this.connected = false;
     }
   }
   /// 
   onSerialErrorOccurred(eventSender, error) {
-   // this.connected = false;
+    // this.connected = false;
     console.log("onSerialErrorOccurred");
     console.log(error);
   }
@@ -169,6 +181,7 @@ class SerialCommunication extends ICommunicationMethod {
     console.log(newData)
 
     const parts = newData.split(':');
+
     if (parts.length === 2) {
 
       const commandName = parts[0];
@@ -192,12 +205,12 @@ class SerialCommunication extends ICommunicationMethod {
             // rising
             console.log("value rising")
             // todo:improve the handling of notifcations 
-            this.submitPrompt(JSON.stringify(updateObject), "system");
+            this.submitPrompt(JSON.stringify(updateObject));
           } else if (oldValue > notifyObject.value && notifyObject.checkOn == "fall") {
             //falling
             console.log("value falling")
             // todo:improve the handling of notifcations 
-            this.submitPrompt(JSON.stringify(updateObject), "system");
+            this.submitPrompt(JSON.stringify(updateObject));
           }
         } else {
           console.log("value change")
@@ -205,19 +218,28 @@ class SerialCommunication extends ICommunicationMethod {
           console.log(JSON.stringify(updateObject))
           console.log(this.submitPrompt)
           // todo:improve the handling of notifcations 
-          this.submitPrompt(JSON.stringify(updateObject), "system");
+          this.submitPrompt(JSON.stringify(updateObject));
         }
       } else {
-        let notifyObject = Object.keys(functionList).find(key => key === commandName);
-        if (notifyObject != null) {
-          console.log("there is a matching function in the function list")
-          let updateObject = {
-            description: commandName,
-            value: value,
+        if (this.pendingReadPromise) {
+          let notifyObject = Object.keys(functionList).find(key => key === commandName);
+          if (notifyObject != null) {
+            let updateObject = {
+              description: commandName,
+              value: value,
+            }
+            /*
+            console.log(eventSender)
+            console.log(updateObject)
+            console.log(this.submitPrompt)
+            console.log("there is a matching function in the function list")
+            this.submitPrompt(JSON.stringify(updateObject));
+*/
+            this.pendingReadResolve(updateObject);
+            this.pendingReadPromise = null;
+            this.pendingReadResolve = null;
+            // this could be a response from an earlier command 
           }
-          this.submitPrompt(JSON.stringify(updateObject), "system");
-          // this could be a response from an earlier command 
-
         }
       }
     }
