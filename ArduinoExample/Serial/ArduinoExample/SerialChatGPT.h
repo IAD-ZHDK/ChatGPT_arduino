@@ -1,6 +1,34 @@
+#ifndef SERIALCHATGPT_H
+#define SERIALCHATGPT_H
 
+#include <Arduino.h>
+
+// Define the structure for command functions
+struct Command {
+  String name;
+  String dataType;
+    union {
+  void (*funcBool)(bool);
+  void (*funcInt)(int);
+  void (*funcFloat)(float);
+  void (*funcString)(String);
+  void (*funcVoid)();
+     };
+};
+
+// Declare the command functions array
+extern Command commandFunctions[];
+extern const int numCommands; // Declare numCommands as an extern variable
+
+// Function declarations
+void processCommand(String command);
+void notify(String name, String info);
+void notify(String name, int info);
+void notify(String name, float info);
+
+// Function definitions
 void processCommand(String command) {
-  const int numCommands = sizeof(commandFunctions) / sizeof(commandFunctions[0]);
+
   for (int i = 0; i < numCommands; ++i) {
     if (command.startsWith(commandFunctions[i].name)) {
       String arg = command.substring(commandFunctions[i].name.length());  // get everything folowing the command keyword
@@ -14,15 +42,19 @@ void processCommand(String command) {
         }
         commandFunctions[i].funcBool(argument);
       } else if (commandFunctions[i].dataType == "int") {
+          //  Serial.println(commandFunctions[i].name);
         int argument = arg.toInt();
         commandFunctions[i].funcInt(argument);
       } else if (commandFunctions[i].dataType == "float") {
+          //    Serial.println(commandFunctions[i].name);
         float argument = arg.toFloat();
         commandFunctions[i].funcFloat(argument);
       } else if (commandFunctions[i].dataType == "string") {
+         //     Serial.println(commandFunctions[i].name);
         commandFunctions[i].funcString(arg);
       } else if (commandFunctions[i].dataType == "none") {
-        commandFunctions[i].funcVoid();
+        //  Serial.println(commandFunctions[i].name);
+          commandFunctions[i].funcVoid();
       }  
       else {
         Serial.println("dataType not found");
@@ -47,6 +79,4 @@ void notify(String name, float info) {
   notify(name, String(info));
 }
 
-void notify(String name, bool info) {
-  notify(name, String(info));
-}
+#endif // SERIALFUNCTIONS_H

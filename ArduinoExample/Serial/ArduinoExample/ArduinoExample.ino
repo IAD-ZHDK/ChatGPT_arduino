@@ -4,6 +4,7 @@
 #include <Arduino_LSM6DS3.h>  // the IMU used on the Uno Wifi rev 2
 #endif
 
+#include "SerialChatGPT.h"
 
 // Variables
 bool ledState = false;
@@ -89,20 +90,7 @@ void set_String(String str) {
 void get_String() {
   notify("get_String", storedString);
 }
-
-
-
-struct Command {
-  String name;
-  String dataType;
-    union {
-    void (*funcVoid)();
-    void (*funcBool)(bool);
-    void (*funcInt)(int);
-    void (*funcFloat)(float);
-    void (*funcString)(String);
-   };
-};                                       
+                                    
 // {"function_name", "writeDataType", function}
 Command commandFunctions[] = {
   { "set_LED", "bool", set_LED},
@@ -114,3 +102,6 @@ Command commandFunctions[] = {
   { "set_String", "string", set_String},
   { "get_String", "none", get_String}
 };
+
+// Define the number of commands
+const int numCommands = sizeof(commandFunctions) / sizeof(commandFunctions[0]);
