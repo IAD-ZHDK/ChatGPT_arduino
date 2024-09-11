@@ -13,7 +13,6 @@ class jsFunctions {
         });
     }
 
-
     start_party(command) {
 // this is an example function for testing 
         function createGlitter() {

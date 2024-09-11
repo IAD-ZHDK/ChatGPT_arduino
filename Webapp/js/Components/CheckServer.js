@@ -1,5 +1,4 @@
 async function checkServerStatus(url) {  
-
     try {
         const response = await fetch(url);
         if (response.ok) {
