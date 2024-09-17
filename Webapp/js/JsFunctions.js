@@ -1,7 +1,7 @@
 class jsFunctions {
-    constructor(submitPrompt) {
+    constructor(submitPrompt, communicationMethod) {
         this.submitPrompt = submitPrompt;
-
+        this.communicationMethod = communicationMethod;
         // add all your custom functions to the window context 
         window.star_pressed = this.star_pressed.bind(this); // Attach to window
 

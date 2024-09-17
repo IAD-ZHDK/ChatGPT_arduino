@@ -90,7 +90,7 @@ void set_String(String str) {
 void get_String() {
   notify("get_String", storedString);
 }
-                                    
+                                
 // {"function_name", "writeDataType", function}
 Command commandFunctions[] = {
   { "set_LED", "bool", set_LED},
