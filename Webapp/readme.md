@@ -31,6 +31,7 @@ Before you begin, ensure you have the following:
 3. Run the webapp on a [local web server.](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 4. Always ask ChatGPT to connect to the remote device first
 5. Change the bevahour of chatGPT by editing the params.js file
+6. You can ask ChatGPT to ignore the serial connection by sending the message ```ignore serial```
 
 ## Arduino
 

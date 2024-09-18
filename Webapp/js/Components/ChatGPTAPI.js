@@ -14,6 +14,7 @@ class ChatGPTAPI {
 		this.comMethod = communicationMethod;
 		this.MaxTokens = 2048;
 		this.UserId = "1";
+		this.ignoreSerial = false;
 		// format all comm functions and add to chatGPTs function list
 
 		for (const key in functionList) {
@@ -94,6 +95,11 @@ class ChatGPTAPI {
 				role: "assistant",
 			}
 
+			if (sQuestion.toLowerCase().includes("ignore serial")) {
+                this.ignoreSerial = true;
+                console.log("Serial communication will be ignored for this session.");
+            }
+
 			if (sQuestion == "") {
 				console.log("message content is emtpy!");
 				return;
@@ -153,6 +159,14 @@ class ChatGPTAPI {
 							if (method || functionList.hasOwnProperty(functionName)) {
 
 								let functionReturnPromise;
+								
+								if (this.ignoreSerial && functionName === "connect") {
+									console.log("Ignoring Serial connection attempt.");
+									returnObject.message = "Serial connection ignored as requested.";
+									returnObject.role = "function";
+									resolve(returnObject);
+									return;
+								}
 
 								if (method) {
 									functionReturnPromise = method.call(sComMethod, functionArguments); // Call the method with arguments
@@ -268,9 +282,6 @@ class ChatGPTAPI {
 
 		})
 	}
-
-
-
 
 	additionalFunctions = [
 

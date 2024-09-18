@@ -78,6 +78,8 @@ let conversationProtocal = [{
 {
     "role": "user",
     "content": 'A monkey'
+
+    
 },
 {
     "role": "assistant",

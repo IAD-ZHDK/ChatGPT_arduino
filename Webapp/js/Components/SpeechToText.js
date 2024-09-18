@@ -4,8 +4,7 @@ class SpeechToText {
 		this.SpeechRecognitionOn = false;
 		this.SpeechRecognizer = null
 		this.chkSpeak = false;
-
-
+		
 		this.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 		this.SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
 		this.SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;

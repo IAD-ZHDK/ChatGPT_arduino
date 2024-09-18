@@ -79,6 +79,7 @@ window.onload = function () {
 	screenView.textLogerln("model: " + ChatGPT.getModel(), "info");
 	screenView.textLogerln("🎤 speech recognition is " + ((SpeechRecognizer.chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
 	screenView.textLogerln("🛜 Press Ctrl+b to connect to device, or ask ChatGPT to connect", "info");
+	screenView.textLogerln("📸 Press Ctrl+c to open camera in a new tab", "info");
 	screenView.textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
 }
@@ -130,6 +131,11 @@ function keypressed(event) {
 		SpeechRecognizer.begin();
 		screenView.textLogerln("speech recognition is " + ((SpeechRecognizer.chkSpeak) ? "on" : "off") + " 🎤 ", "info");
 	}
+
+	if (event.key == "c" && event.ctrlKey || event.key == "C" && event.ctrlKey) {
+		window.open("http://127.0.0.1:5502/Webapp/camera.html", "_blank");
+	}
+
 
 	// connect to Device with "Ctrl+b"
 	if (event.key == "b" && event.ctrlKey || event.key == "B" && event.ctrlKey) {
