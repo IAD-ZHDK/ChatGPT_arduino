@@ -5,7 +5,6 @@ import View from './View.js';
 import jsFunctions from './JsFunctions.js';
 import TextToSpeech from './Components/TextToSpeech.js';
 import TextToSpeechOpenAI from './Components/TextToSpeechOpenAI.js';
-
 import SpeechToText from './Components/SpeechToText.js';
 import checkServerStatus from './Components/CheckServer.js';
 
