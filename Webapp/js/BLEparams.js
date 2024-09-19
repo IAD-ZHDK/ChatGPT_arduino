@@ -53,7 +53,7 @@ let presence_penalty = 0.0;  //Number between -2.0 and 2.0
 //Positive value decrease the model's likelihood 
 //to repeat the same line verbatim.
 
-let conversationProtocal = [{
+let config.conversationProtocol = [{
     'role': 'system',
     'content': systemText
     // assistant messages help store prior responses

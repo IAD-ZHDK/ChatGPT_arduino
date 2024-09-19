@@ -1,10 +1,12 @@
 class jsFunctions {
     constructor(submitPrompt, communicationMethod) {
-        this.submitPrompt = submitPrompt;
+        
         this.communicationMethod = communicationMethod;
-        // add all your custom functions to the window context 
-        window.star_pressed = this.star_pressed.bind(this); // Attach to window
+        this.submitPrompt = submitPrompt;
+        // add all custom functions to the window context 
+        this.functions = this.autoBindFunctions();
 
+        // bind the star_pressed function to the document
         document.addEventListener('keydown', (event) => {
             if (event.key === '*') {
                 console.log("star pressed")
@@ -13,8 +15,43 @@ class jsFunctions {
         });
     }
 
+    autoBindFunctions() {
+        const functions = {};
+        const prototype = Object.getPrototypeOf(this);
+        const properties = Object.getOwnPropertyNames(prototype);
+
+        for (const prop of properties) {
+            if (typeof this[prop] === 'function' && 
+                prop !== 'constructor' && 
+                prop !== 'autoBindFunctions' &&
+                prop !== 'executeFunction' &&
+                prop !== 'getFunctionList') {
+                functions[prop] = this[prop].bind(this);
+            }
+        }
+
+        return functions;
+    }
+
+    executeFunction(functionName, args) {
+        if (this.functions[functionName]) {
+            return this.functions[functionName](args);
+        } else {
+            console.error(`Function ${functionName} not found`);
+        }
+    }
+
+    getFunctionList() {
+        return Object.keys(this.functions).reduce((acc, key) => {
+            acc[key] = { dataType: 'boolean', description: 'Custom function' };
+            return acc;
+        }, {});
+    }
+
+    ////////////////////////////////////////////////////////////
+    // Example Function
+
     start_party(command) {
-// this is an example function for testing 
         function createGlitter() {
             const glitter = document.createElement('div');
             glitter.style.position = 'absolute';
@@ -46,18 +83,20 @@ class jsFunctions {
         console.log("command: " + command);
         setInterval(createGlitter, 10);
     }
-    
-    ///////////// Event Function Example //////////////
+
+    ////////////////////////////////////////////////////////////
+    // Event Function Example
+
     star_pressed() {
-            console.log("star pressed")
-            let updateObject = {
+        console.log("star pressed")
+        let updateObject = {
                 description: "star_pressed",
                 value: "true",
                 type: "bool",
             }
-            this.submitPrompt(JSON.stringify(updateObject));
-   
+        this.submitPrompt(JSON.stringify(updateObject));
     }
+
 }
 
 export default jsFunctions;

@@ -187,7 +187,7 @@ class SerialCommunication extends ICommunicationMethod {
       const commandName = parts[0];
       const value = parts[1];
 
-      let notifyObject = Notify.find(notifyObj => notifyObj.name === commandName);
+      let notifyObject = config.notifications.find(notifyObj => notifyObj.name === commandName);
       if (notifyObject != null) {
         console.log("there is a matching function in the Notify list")
         // there is a matching function in the Notify list

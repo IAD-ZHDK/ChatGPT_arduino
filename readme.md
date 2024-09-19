@@ -40,10 +40,15 @@ const OPENAI_API_KEY = 'PUT YOUR API KEY HERE'; // never share this or publish o
 
 Next you will want to modify the example to give ChatGPT a unique personality or rules to control its behaviour. Check out the [best practice guide in the API documentation](https://platform.openai.com/docs/guides/gpt-best-practices/strategy-write-clear-instructions) for more tips. 
 
-1. Open the params.js file
+1. Open the config.js file
 2. Change the system text to modify the behaviour of the chatbot. 
 3. Each request to the API send all of the system instructions and message history, so keep the length of instructions to minimal to [avoid exceeding the token quota](https://openai.com/pricing). 
 
+## Custom Functions 
+
+1. You can add custom functions to ChatGPT by editing the file ```JsFunctions.js```. These functions will be available to ChatGPT to use. There're two pre-defined functions: ```start_party``` and ```star_pressed```. The first function is an example function that will be executed on the Arduino, the second function is an example function that will be executed in the browser. 
+2. Use ```config.js``` to set the list of functions that ChatGPT can use. Inside of  ```local_functionList ``` you can add new functions and descriptions.
+   
 ## Arduino
 
 Currently the ArduinoBLE library is extremely bloated. We have have good experience using version 1.1.1 which is fairly light, together with the wifiNina firmware version 1.5. 

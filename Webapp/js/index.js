@@ -11,10 +11,13 @@ import checkServerStatus from './Components/CheckServer.js';
 let communicationMethod = null;
 let ChatGPT = null;
 let localFunctions = null;
+let local_functionList = null;
 let userActive = false;
 let screenView = null;
 let SpeechSynthesiser = null;
 let SpeechRecognizer = null;
+//create a channel to receive messages from ml5.js
+const channel = new BroadcastChannel('ml5-channel');
 
 function submitPrompt(input, role = "system") {
 
@@ -55,25 +58,30 @@ function submitPrompt(input, role = "system") {
 	}
 }
 
-
 window.onload = function () {
-	if (commMethod == "BLE") {
+	if (config.communicationMethod == "BLE") {
 		communicationMethod = new BLECommunication(submitPrompt);
-	} else if (commMethod == "Serial") {
+	} else if (config.communicationMethod == "Serial") {
 		communicationMethod = new SerialCommunication(submitPrompt);
 	} else {
 		communicationMethod = new SerialCommunication(submitPrompt);
 	}
 
-	localFunctions = new jsFunctions(submitPrompt, communicationMethod);
+	localFunctions = new jsFunctions(submitPrompt,communicationMethod);
+    local_functionList = { ...local_functionList, ...localFunctions.getFunctionList() };
+	console.log(local_functionList)
+
+	channel.onmessage = (event) => {
+        if (event.data.type === 'executeFunction' && localFunctions.executeFunction) {
+            localFunctions.executeFunction(event.data.functionName, event.data.arg);
+        }
+    };
+	
 	SpeechRecognizer = new SpeechToText(submitPrompt)
-	// Call the function to initialize the SpeechSynthesiser
 	initializeSpeechSynthesiser();
 
-
-
 	screenView = new View();
-	ChatGPT = new ChatGPTAPI(communicationMethod);
+	ChatGPT = new ChatGPTAPI(communicationMethod, localFunctions);
 	screenView.textLogerln('<b>Welcome to ChatGPT BLE Arduino Connector</b>', "info");
 	screenView.textLogerln("model: " + ChatGPT.getModel(), "info");
 	screenView.textLogerln("🎤 speech recognition is " + ((SpeechRecognizer.chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
@@ -90,7 +98,6 @@ document.addEventListener("click", function () {
 
 document.addEventListener("keydown", keypressed);
 
-
 async function initializeSpeechSynthesiser() {
 	try {
 		const isRunning = await checkServerStatus("http://localhost:3000/");
@@ -106,7 +113,6 @@ async function initializeSpeechSynthesiser() {
 		SpeechSynthesiser = new TextToSpeech(SpeechRecognizer);
 	}
 }
-
 
 function keypressed(event) {
 	let prompt = document.getElementById("prompt");
@@ -131,10 +137,10 @@ function keypressed(event) {
 		screenView.textLogerln("speech recognition is " + ((SpeechRecognizer.chkSpeak) ? "on" : "off") + " 🎤 ", "info");
 	}
 
+    //switch to camera view with "Ctrl+C"
 	if (event.key == "c" && event.ctrlKey || event.key == "C" && event.ctrlKey) {
 		window.open("http://127.0.0.1:5502/Webapp/camera.html", "_blank");
 	}
-
 
 	// connect to Device with "Ctrl+b"
 	if (event.key == "b" && event.ctrlKey || event.key == "B" && event.ctrlKey) {
