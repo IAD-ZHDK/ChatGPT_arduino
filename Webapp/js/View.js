@@ -6,6 +6,7 @@ class View  {
 
 
  textLoger(string, agent) {
+	console.log("logger:"+string);
 	let textBox = document.getElementById('history');
 	try {
 		// textBox.innerHTML += string;

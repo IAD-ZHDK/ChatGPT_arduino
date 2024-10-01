@@ -251,6 +251,7 @@ class ChatGPTAPI {
                 role: "assistant",
                 content: s,
               });
+              console.log(returnObject)
               resolve(returnObject);
             }
           }
@@ -326,15 +327,6 @@ class ChatGPTAPI {
     },
   ];
 
-  /* 	callFunctionByName(functionName, context, ...args) {
-		var namespaces = functionName.split(".");
-		var func = namespaces.pop();
-		context = context || window;
-		for (var i = 0; i < namespaces.length; i++) {
-			context = context[namespaces[i]];
-		}
-		return context[func].apply(context, args);
-	} */
 
   callFunctionByName(functionName, args) {
     if (this.localFunctions[functionName] && typeof this.localFunctions.executeFunction === 'function') {

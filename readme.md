@@ -70,7 +70,7 @@ The web app handles the routing of these function calls to the Arduino connected
 
 The Arduino can talk directly to chatGPT without anything needed to be typed in the web app. This works by programing events on the arduino to send information to chatGPT.
 
-In BLE mode, this is done with a characteristic, which is simply a data item exposed over BLE to readable and/or writable from an other device. The browser will subscribe to any characteristic listed in Params.js, and if there is a an event it will relay the information to chatGPT. 
+In BLE mode, this is done with a characteristic, which is simply a data item exposed over BLE to readable and/or writable from an other device. The browser will subscribe to any characteristic listed in Config.js, and if there is a an event it will relay the information to chatGPT. 
 
 This Serial mode, this is simply done with the notify() command. 
 

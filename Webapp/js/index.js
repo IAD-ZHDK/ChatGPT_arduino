@@ -31,7 +31,7 @@ function submitPrompt(input, role = "system") {
 		ChatGPT.send(input, role).then((returnObject) => {
 			// handle nested promises that might be returned
 			recievedMessage(returnObject)
-		}).catch(error => screenView.textLogerln(error.message, "assistant"));
+		})
 		input = ''; // clear prompt box
 	}
 
@@ -45,9 +45,16 @@ function submitPrompt(input, role = "system") {
 		// TODO: protect against endless recursion
 		screenView.textLogerln(returnObject.message, returnObject.role)
 		if (returnObject.role == "assistant") {
-			SpeechSynthesiser.say(returnObject.message);
+			// convert the returnObject.message to string to avoid the class having access to the returnObject
+			let message = returnObject.message.toString();
+			try {
+				SpeechSynthesiser.say(message);
+			} catch (error) {
+				console.log(error);
+			}
 		}
 		if (returnObject.promise != null) {
+			console.log("there is a promise")
 			// there is another nested promise 
 			returnObject.promise.then((returnObject) => {
 				recievedMessage(returnObject)
@@ -99,6 +106,7 @@ document.addEventListener("click", function () {
 document.addEventListener("keydown", keypressed);
 
 async function initializeSpeechSynthesiser() {
+	console.log("Initializing TextToSpeech")
 	try {
 		const isRunning = await checkServerStatus("http://localhost:3000/");
 		if (isRunning) {
@@ -106,6 +114,7 @@ async function initializeSpeechSynthesiser() {
 			SpeechSynthesiser = new TextToSpeechOpenAI(SpeechRecognizer);
 		} else {
 			console.log('Server is not running on port 3000');
+			console.log('Using browser text to speech');
 			SpeechSynthesiser = new TextToSpeech(SpeechRecognizer);
 		}
 	} catch (err) {
