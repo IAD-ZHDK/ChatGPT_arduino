@@ -6,6 +6,7 @@ let context;
 let captureButton;
 let inquiryButton;
 let base64Image;
+let localFunctions = null;
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -84,3 +85,4 @@ async function sendImageToAPI() {
 
     }
 }
+

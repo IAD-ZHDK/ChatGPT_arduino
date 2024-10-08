@@ -1,6 +1,9 @@
 class TextToSpeech {
 
 	constructor(SpeechRecognizer) {
+        console.log("Text To Speech starting");
+
+        // we need acess to the speech recognizer in order to pause it while synthesising speech 
         this.SpeechRecognizer = SpeechRecognizer;
         this.TextToSpeechSupported = false;
         this.SpeechSynthesisUtterance = null;
@@ -18,7 +21,7 @@ class TextToSpeech {
 
     say(s) {
         if (this.TextToSpeechSupported == false) return;
-        console.log("TextToSpeech");
+        console.log("TextToSpeech: " + s);
         this.SpeechSynthesisUtterance = new SpeechSynthesisUtterance();
     
         if (this.Voices) {
@@ -39,11 +42,15 @@ class TextToSpeech {
             this.SpeechRecognizer.resume() 
         }.bind(this);
     
-        this.SpeechSynthesisUtterance.addEventListener("start", (event) => {
-            console.log(`We have started uttering this speech: ${event.utterance.text}`);
-            this.SpeechRecognizer.pause() 
-        }).bind(this);
-    
+        if (this.SpeechSynthesisUtterance && this.SpeechRecognizer) {
+            this.SpeechSynthesisUtterance.addEventListener("start", (event) => {
+                console.log(`We have started uttering this speech: ${event.utterance.text}`);
+                console.log('SpeechRecognizer:', this.SpeechRecognizer);
+                this.SpeechRecognizer.pause();
+            });
+        } else {
+            console.error('SpeechSynthesisUtterance or SpeechRecognizer is not initialized.');
+        }
         this.SpeechSynthesisUtterance.lang = "en-US";
         this.SpeechSynthesisUtterance.text = s;
         this.SpeechSynthesisUtterance.rate = 1.2;

@@ -15,7 +15,7 @@ unsigned long previousMillisShake = 0;  // This is used to keep track of notify 
 String storedString = "bas";
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200); // don't change the baud rate!
   pinMode(LED_BUILTIN, OUTPUT);
 
 #ifdef ARDUINO_AVR_UNO_WIFI_REV2

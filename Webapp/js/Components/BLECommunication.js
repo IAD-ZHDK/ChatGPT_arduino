@@ -14,9 +14,9 @@ class BLECommunication extends ICommunicationMethod {
     receive(event) {
         console.log(" 🎉 🎊 event! 🎉 🎊 ")
         let value = event.target.value;
-        let notifyObject = Notify.find(notifyObj => notifyObj.uuid === event.currentTarget.uuid);
+        let notifyObject = config.notifications.find(notifyObj => notifyObj.uuid === event.currentTarget.uuid);
         if (notifyObject != null) {
-            // there is a matching myCharacteristics in the Notify list
+            // there is a matching myCharacteristics in the notifications list
             let oldValue = notifyObject.value;
             if (notifyObject.type == "boolean") {
                   console.log("boolean")
