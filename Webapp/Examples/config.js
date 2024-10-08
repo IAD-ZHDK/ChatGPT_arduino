@@ -1,18 +1,4 @@
 const notifications = [
-    
-  {
-    name: "shake",
-    uuid: "19b10016-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-    type: "boolean",
-    checkOn: "rise",
-    info: "The device has been shaken!",
-  },
-  {
-    name: "Potentiometer",
-    uuid: "19b10036-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-    type: "int",
-    info: "The Potentiometer has been updated. Min: 0, Max: 1023",
-  },
   {
     name: "star_pressed",
     type: "boolean", // possible values are "boolean" and "int"
@@ -46,47 +32,37 @@ const config = {
 
   // The list of functions should match those set up on the arduino 
   functionList: {
-    set_LED: {
-      uuid: "19b10001-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-      commType: "write",
-      dataType: "boolean",
-      description: "0 is off, 1 is on",
-    },
-    get_LED: {
-      uuid: "19b10001-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-      commType: "read",
-      dataType: "boolean",
-      description: "0 is off, 1 is on",
-    },
-    set_motor_position: {
-      uuid: "19b10012-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-      commType: "write",
-      dataType: "number",
-      description:
-        "Sets the motors position in degrees. No maximum value or limit.",
-    },
-    set_motor_speed: {
-      uuid: "19b10012-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-      commType: "write",
-      dataType: "number",
-      description: "Sets the motors speed in RPM.",
-    },
-    get_IMU: {
-      uuid: "19b10012-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-      commType: "read",
-    },
-    set_String: {
-      uuid: "19b10012-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-      commType: "write",
+    move_robot_to_default: {
+      commType: "writeRaw",
       dataType: "string",
-      description: "Sets the motors speed in RPM.",
+      defaultValue: "G2201 S215 R107 H100 F10000",
+      description: "Send the robot to it's home/default position with the command 'G2201 S215 R90 H100 F10000'",
     },
-    get_String: {
-      uuid: "19b10012-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-      commType: "read",
+    rotate_to: {
+      commType: "writeRaw",
       dataType: "string",
-      description: "Sets the motors speed in RPM.",
+      description: "rotate to the left or right depending on the users wish, but changing the R### to be lower for left and higher for right. For example, this would be the furthest left 'G2201 S215 R0 H100 F10000'",
     },
+    moveHigher: {
+      commType: "writeRaw",
+      dataType: "string",
+      description: "Increase the hight value H### by 10. For example, this would be 'G2201 S215 R107 H110 F10000' if the last command was 'G2201 S215 R107 H100 F10000'",
+    },
+    moveLower: {
+      commType: "writeRaw",
+      dataType: "string",
+      description: "Decrease the hight value H### by 10. For example, this would be 'G2201 S215 R107 H90 F10000' if the last command was 'G2201 S215 R107 H100 F10000'",
+    },
+    start_suction: {
+      commType: "writeRaw",
+      dataType: "string",
+      description: "Start the robots suction compressor with the command'M2231 V1'",
+    },
+    stop_suction: {
+      commType: "writeRaw",
+      dataType: "string",
+      description: "Stop the robots suction compressor with the command'M2231 V0'",
+    }
   },
 
   local_functionList: local_functionList,
@@ -96,7 +72,21 @@ const config = {
   conversationProtocol: [
     {
       role: "system",
-      content: `You control an external device with several functions calls. You must first be connected before attempting any other functions.You will also sometimes receive notifications from events ${JSON.stringify(notifications )}.You will be very helpful, and offer advice is the api doesnt work as expected.`,
+      content: `You control an externaly connected robot. 
+      You must first be connected before attempting any other functions.
+      You will also sometimes receive notifications from events ${JSON.stringify(notifications )}.
+      Keep your answers short and too the point.
+      You can send commands to the robot in the form of G2201 S215 R107 H100 F10000, where
+      S### is the stretch, R### is the rotation, H### is the height, and F#### is the speed
+      Always send the full command, even if the user only wants to change one property
+      Mostly use the maximum speed, unless the user wants otherwise
+      The ground is indicated with height of H0.
+      The maximum range of motion for the robot is: 
+      minHeight = -50;
+      maxHeight = 150;
+      minStretch = 95;
+      maxStretch = 330;
+      maxAngle = 180;`,
     },
 
  // we can also add in history of older conversations here, or construct new ones.

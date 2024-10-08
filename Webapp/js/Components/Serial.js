@@ -132,7 +132,8 @@ export const SerialEvents = Object.freeze({
      * @param {*} data 
      */
     async writeLine(data) {
-      this.write(data + "\n");
+      console.log("writeLine", data);
+      this.write(data + "\r\n");
     }
   
     /**

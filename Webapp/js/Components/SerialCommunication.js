@@ -7,13 +7,14 @@ class SerialCommunication extends ICommunicationMethod {
     this.connected = false;
     this.pendingReadPromise = null;
     this.pendingReadResolve = null;
-    this.serialOptions = { baudRate: 9600 }
+    this.serialOptions = { baudRate: 115200 }
     // Setup Web Serial using serial.js
     this.serial = new Serial();
     this.serial.on(SerialEvents.CONNECTION_OPENED, this.onSerialConnectionOpened.bind(this));
     this.serial.on(SerialEvents.CONNECTION_CLOSED, this.onDisconnected.bind(this));
     this.serial.on(SerialEvents.DATA_RECEIVED, this.receive.bind(this));
     this.serial.on(SerialEvents.ERROR_OCCURRED, this.onSerialErrorOccurred.bind(this));
+    this.writeRaw = this.writeRaw.bind(this);
     this.serialData = ""
   }
 
@@ -68,6 +69,7 @@ class SerialCommunication extends ICommunicationMethod {
       return true
     }
   }
+
   write(data) {
     let returnObject = {
       description: "Writing to Serial",
@@ -93,34 +95,45 @@ class SerialCommunication extends ICommunicationMethod {
           resolve(returnObject);
         }
       });
-      /*
-      this.currentCommand = data;
-      let startTime = Date.now();
-      let timeout = 5000; // Timeout in milliseconds (5 seconds)
-      let timedOutTriggered = false;
-      while (this.currentCommand.resolved == false) {
-        // Check if the timeout has been reached
-        if (Date.now() - startTime > timeout) {
-          console.log("Timeout reached, breaking out of the loop.");
-          returnObject.description = "Timeout on Serial: check hardware"
-          this.currentCommand = null;
-          timedOutTriggered = true;
-          break;
-        }
-      }
-      if (!timedOutTriggered) {
-        this.currentCommand = null;
-        returnObject.description = "Serial write successful";
-      }
-      console.log("resolving");
-      */
       console.log("resolving");
       returnObject.description = "Serial write successful";
       resolve(returnObject);
     });
   }
 
+  writeRaw(DataString) {
+    let returnObject = {
+      description: "Writing to Serial",
+      value: "",
+    }
+
+    //
+    console.log("write data", DataString);
+
+    let dataToSend = DataString;
+
+    return new Promise((resolve, reject) => {
+
+      if (this.serialConnectec() != true) {
+        console.log('Port is not open');
+        resolve(this.checkConection());
+      }
+      console.log('Writing to Serial...', dataToSend);
+      this.serial.writeLine(dataToSend, (err) => {
+        if (err) {
+          console.log('Error writing to port: ', err);
+          returnObject.description = `Error writing to port: ${err.message}`
+          resolve(returnObject);
+        }
+      });
+      console.log("resolving");
+      returnObject.description = "Serial write raw successful";
+      resolve(returnObject);
+    });
+  }
+
   read(data) {
+    // todo: need to make a time out incase there is not response!
     let returnObject = {
       description: "",
       value: "",
@@ -135,7 +148,7 @@ class SerialCommunication extends ICommunicationMethod {
       this.pendingReadPromise = true;
       this.pendingReadResolve = resolve;
 
-      if (this.serialConnectec() == false) {
+      if (this.serialConnectec() != true) {
         console.log('Port is not open');
         resolve(checkConection());
       }

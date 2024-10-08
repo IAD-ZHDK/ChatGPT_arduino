@@ -177,7 +177,7 @@ class ChatGPTAPI {
 
                   console.log("arguments: ");
                   console.log(functionArguments);
-
+                  console.log(functionArguments.value);
                   if (
                     config.functionList[functionName].commType == "readWrite" ||
                     config.functionList[functionName].commType == "write"
@@ -187,7 +187,14 @@ class ChatGPTAPI {
                       sComMethod,
                       functionArguments
                     ); // Call the method with arguments
-                  } else {
+                  } else if (config.functionList[functionName].commType == "writeRaw") {
+                    const method = sComMethod.getMethod("writeRaw");
+                    const newArgument =  String(functionArguments.value)
+                    functionReturnPromise = method.call(
+                      sComMethod,
+                      newArgument
+                    )
+                  }else {
                     // read only
                     const method = sComMethod.getMethod("read");
                     functionReturnPromise = method.call(

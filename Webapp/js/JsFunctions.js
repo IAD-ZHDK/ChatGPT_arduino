@@ -50,7 +50,8 @@ class jsFunctions {
 
     ////////////////////////////////////////////////////////////
     // Example Function
-
+    // Bellow this line you can add your own custom functions.
+    //////////////////////////////////////////////////////
     start_party(command) {
         function createGlitter() {
             const glitter = document.createElement('div');
