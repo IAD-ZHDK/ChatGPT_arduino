@@ -87,6 +87,7 @@ void get_motor_position() {
 
 void set_motor_speed(int speed) {
   motorSpeed = speed;
+  myServoSerial.print(String("#") + LSS_ID + String("WR") + motorSpeed  + "\r"); // RPM move
   // Add code to set motor speed
 }
 

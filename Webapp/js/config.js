@@ -79,13 +79,13 @@ const config = {
       uuid: "19b10012-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
       commType: "write",
       dataType: "string",
-      description: "Sets the motors speed in RPM.",
+      description: "Set a message on the device.",
     },
     get_String: {
       uuid: "19b10012-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
       commType: "read",
       dataType: "string",
-      description: "Sets the motors speed in RPM.",
+      description: "Get the string from the device.",
     },
   },
 
