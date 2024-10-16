@@ -1,14 +1,20 @@
 #include <Arduino.h>
-
+#include <SoftwareSerial.h>
 #ifdef ARDUINO_AVR_UNO_WIFI_REV2
 #include <Arduino_LSM6DS3.h>  // the IMU used on the Uno Wifi rev 2
 #endif
+
+// Smart Servo Variables
+#define rxPin 8
+#define txPin 9
+SoftwareSerial myServoSerial(rxPin, txPin);  // Create the new software serial instance
+#define LSS_ID 254 // ID 254 to broadcast to every motor on bus
 
 #include "SerialChatGPT.h"
 
 // Variables
 bool ledState = false;
-float motorPosition = 1.0;
+float motorPosition = 0.0;
 int motorSpeed = 0;
 int imuValue = 5;
 unsigned long previousMillisShake = 0;  // This is used to keep track of notify frequencies
@@ -25,6 +31,10 @@ void setup() {
       ;
   }
 #endif
+  // set up smart servo 
+  myServoSerial.begin(115200);
+  myServoSerial.print("#0D1500\r");  // this is used to clear the serial buffer
+  myServoSerial.print(String("#") + LSS_ID + String("LED") + 6 + "\r"); // set LED
 }
 
 void loop() {
@@ -66,6 +76,7 @@ void get_LED() {
 
 void set_motor_position(float position) {
   motorPosition = position;
+  myServoSerial.print(String("#") + LSS_ID + String("D") + int(motorPosition*10)  + "\r"); // move 100 degrees
   // Add code to set motor position
 }             
 
