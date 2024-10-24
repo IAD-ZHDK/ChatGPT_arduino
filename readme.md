@@ -42,7 +42,7 @@ Next you will want to modify the example to give ChatGPT a unique personality or
 
 1. Open the config.js file
 2. Change the system text to modify the behaviour of the chatbot. 
-3. Each request to the API send all of the system instructions and message history, so keep the length of instructions to minimal to [avoid exceeding the token quota](https://openai.com/pricing). 
+3. Each request to the API sends all of the system instructions and message history, so keep the length of instructions to minimal to [avoid exceeding the token quota](https://openai.com/pricing). 
 
 ## Custom Functions 
 
@@ -74,7 +74,7 @@ In BLE mode, this is done with a characteristic, which is simply a data item exp
 
 This Serial mode, this is simply done with the notify() command. 
 
-Be careful how often these events are fired. It will take ChatGPT a couple of seconds to respond to each event, so you don't want to be firing this events very frequently.  
+Be careful how often these events are fired. It will take ChatGPT a couple of seconds to respond to each event, so you don't want to be firing these events very frequently.  
 
 ``` csharp 
     int sensorValue = analogRead(A0);
