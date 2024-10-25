@@ -1,11 +1,20 @@
 class jsFunctions {
     constructor(submitPrompt, communicationMethod) {
-        
+        this.channel = new BroadcastChannel('example_channel');
+        this.channel.onmessage = (event) => {
+            console.log('Received message in new window:', event.data);
+            console.log(event.data.value);
+        };
+
         this.communicationMethod = communicationMethod;
         this.submitPrompt = submitPrompt;
         // add all custom functions to the window context 
         this.functions = this.autoBindFunctions();
-
+        //
+        // add the following line for a new window to open, use the broadcast method to communicate between the browser and the new window
+        //
+        // window.open("http://127.0.0.1:5502/Webapp/js/config/newWindow.html", "_blank").focus();
+        // broadCast("init");
         // bind the star_pressed function to the document
         document.addEventListener('keydown', (event) => {
             if (event.key === '*') {
@@ -19,7 +28,6 @@ class jsFunctions {
         const functions = {};
         const prototype = Object.getPrototypeOf(this);
         const properties = Object.getOwnPropertyNames(prototype);
-
         for (const prop of properties) {
             if (typeof this[prop] === 'function' && 
                 prop !== 'constructor' && 
@@ -29,7 +37,6 @@ class jsFunctions {
                 functions[prop] = this[prop].bind(this);
             }
         }
-
         return functions;
     }
 
@@ -46,6 +53,10 @@ class jsFunctions {
             acc[key] = { dataType: 'boolean', description: 'Custom function' };
             return acc;
         }, {});
+    }
+
+    broadCast(message) {
+        this.channel.postMessage({ type: 'update', value: message });
     }
 
     ////////////////////////////////////////////////////////////

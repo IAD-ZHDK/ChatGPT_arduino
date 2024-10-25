@@ -1,3 +1,4 @@
+const voice = 0; // this can be used for defining the type of voice that is used for voice synthesis
 const notifications = [
     
   {
@@ -36,7 +37,7 @@ const config = {
     frequency_penalty: 0.5, //Number between -2.0 and 2.0. //Positive values increase the model's likelihood to talk about new topics.
     presence_penalty: 0.0, //Number between -2.0 and 2.0. //Positive values increase the model's likelihood to generate words and phrases present in the input prompt
     model: "gpt-4o-mini", //gpt-4o-mini, gpt-4o, gpt-4, gpt-3.5-turbo
-    max_tokens: 2048, //Number between 1 and 8192. //The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model's context length. Most models have a context length of 8192 tokens (except for the newest models, which can support more than 128k tokens).
+    max_tokens: 8192, //Number between 1 and 8192. //The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model's context length. Most models have a context length of 8192 tokens (except for the newest models, which can support more than 128k tokens).
     user_id: "1", //A unique identifier for the user. //This is used to track the usage of the API.
     url: "https://api.openai.com/v1/chat/completions", // gpt-4 is "https://api.openai.com/v1/completions";
   },
@@ -96,7 +97,7 @@ const config = {
   conversationProtocol: [
     {
       role: "system",
-      content: `You control an external device with several functions calls. You must first be connected before attempting any other functions.You will also sometimes receive notifications from events ${JSON.stringify(notifications )}.You will be very helpful, and offer advice is the api doesnt work as expected.`,
+      content: `You control an external device with several functions calls. Try connecting again if there is any trouble with the functions. You will also sometimes receive notifications from events ${JSON.stringify(notifications )}.You will be very helpful, and offer advice is the api doesnt work as expected.`,
     },
 
  // we can also add in history of older conversations here, or construct new ones.

@@ -11,9 +11,9 @@ class TextToSpeech {
             console.log("speechSynthesis is on");
             this.TextToSpeechSupported = true;
             speechSynthesis.onvoiceschanged = function () {
-                this.Voices = window.speechSynthesis.getVoices();
-                for (var i = 0; i < this.Voices.length; i++) {
-                    //	console.log(i + " " + this.Voices[i].name)
+                this.browserVoices = window.speechSynthesis.getVoices();
+                for (var i = 0; i < this.browserVoices.length; i++) {
+               //     	console.log(i + " " + this.browserVoices[i].name)
                 }
             };
         }
@@ -22,12 +22,17 @@ class TextToSpeech {
     say(s) {
         if (this.TextToSpeechSupported == false) return;
         console.log("TextToSpeech: " + s);
+
+
+        
         this.SpeechSynthesisUtterance = new SpeechSynthesisUtterance();
-    
-        if (this.Voices) {
-            let voice = "native" // there seems to be a bug here with all the other voices
-            const index = this.Voices.map(e => e.name).indexOf(voice);
-            this.SpeechSynthesisUtterance.voice = this.Voices[index];
+        this.SpeechSynthesisUtterance.lang = "en-US";
+        this.SpeechSynthesisUtterance.text = s;
+        this.SpeechSynthesisUtterance.rate = 1.2;
+
+        if (this.browserVoices) {
+            const index = this.browserVoices.map(e => e.name).indexOf("native"); // there seems to be a bug here with all the other voices
+            this.SpeechSynthesisUtterance.voice = this.browserVoices[index];
         }
     
         this.SpeechSynthesisUtterance.onerror = (event) => {
@@ -45,15 +50,12 @@ class TextToSpeech {
         if (this.SpeechSynthesisUtterance && this.SpeechRecognizer) {
             this.SpeechSynthesisUtterance.addEventListener("start", (event) => {
                 console.log(`We have started uttering this speech: ${event.utterance.text}`);
-                console.log('SpeechRecognizer:', this.SpeechRecognizer);
                 this.SpeechRecognizer.pause();
             });
         } else {
             console.error('SpeechSynthesisUtterance or SpeechRecognizer is not initialized.');
         }
-        this.SpeechSynthesisUtterance.lang = "en-US";
-        this.SpeechSynthesisUtterance.text = s;
-        this.SpeechSynthesisUtterance.rate = 1.2;
+   
         try {
             //	console.log(this.SpeechSynthesisUtterance);
             window.speechSynthesis.cancel();// need this because of chrome bug

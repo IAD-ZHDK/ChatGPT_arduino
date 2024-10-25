@@ -4,11 +4,11 @@ class SpeechToText {
 		this.SpeechRecognitionOn = false;
 		this.SpeechRecognizer = null
 		this.chkSpeak = false;
-		
+		this.isPaused = true;
 		this.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 		this.SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
 		this.SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
-
+        this.commandline = document.getElementById('commandline');
 
 		if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
 			console.log("speechRecognition is supported");
@@ -30,6 +30,8 @@ class SpeechToText {
 			this.SpeechRecognizer.interimResults = true;
 			this.SpeechRecognizer.lang = "en-US"; // or "de-DE"
 			this.SpeechRecognizer.start();
+			this.isPaused = false;
+			this.updateStatusDisplay();
 			this.SpeechRecognizer.onresult = function (event) {
 				console.log("onresult");
 				let interimTranscripts = "";
@@ -54,17 +56,38 @@ class SpeechToText {
 	}
 
 	resume() {
+		this.isPaused = false;
+		this.updateStatusDisplay();
 		if (this.SpeechRecognizer && this.chkSpeak) {
 			this.SpeechRecognizer.start();
 		}
 	}
 
 	pause() {
+		this.isPaused = true;
+		this.updateStatusDisplay();
 		if (this.SpeechRecognizer && this.chkSpeak) {
 			//do not listen to user when speech synthesis is happening 
 			console.log("stop speech recognizer");
 			this.SpeechRecognizer.stop();
 		}
 	}
+	updateStatusDisplay() {
+		if (this.chkSpeak == true) {
+        // Remove existing mic circle if any
+        const existingCircle = this.commandline.querySelector('.mic-circle');
+        if (existingCircle) {
+            this.commandline.removeChild(existingCircle);
+        }
+
+        // Create a new mic circle
+        const micCircle = document.createElement('div');
+        micCircle.classList.add('mic-circle');
+        micCircle.classList.add(this.isPaused ? 'red' : 'green');
+
+        // Insert the mic circle at the beginning of the commandline div
+        this.commandline.insertBefore(micCircle, this.commandline.firstChild);
+   } 
+}
 }
 export default SpeechToText

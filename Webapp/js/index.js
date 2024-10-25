@@ -2,7 +2,7 @@ import BLECommunication from './Components/BLECommunication.js';
 import SerialCommunication from './Components/SerialCommunication.js';
 import ChatGPTAPI from './Components/ChatGPTAPI.js';
 import View from './View.js';
-import jsFunctions from './JsFunctions.js';
+import jsFunctions from './config/JsFunctions.js';
 import TextToSpeech from './Components/TextToSpeech.js';
 import TextToSpeechOpenAI from './Components/TextToSpeechOpenAI.js';
 import SpeechToText from './Components/SpeechToText.js';
@@ -16,11 +16,12 @@ let userActive = false;
 let screenView = null;
 let SpeechSynthesiser = null;
 let SpeechRecognizer = null;
+let Voice = 1;
 //create a channel to receive messages from ml5.js
 const channel = new BroadcastChannel('ml5-channel');
 
 function submitPrompt(input, role = "system") {
-
+	SpeechRecognizer.pause();
 	let prompt = document.getElementById("prompt");
 	if (input != "") {
 		screenView.textLogerln(input, role)
@@ -66,6 +67,7 @@ function submitPrompt(input, role = "system") {
 }
 
 window.onload = function () {
+	Voice = config.voice
 	if (config.communicationMethod == "BLE") {
 		communicationMethod = new BLECommunication(submitPrompt);
 	} else if (config.communicationMethod == "Serial") {
@@ -93,7 +95,7 @@ window.onload = function () {
 	screenView.textLogerln("model: " + ChatGPT.getModel(), "info");
 	screenView.textLogerln("🎤 speech recognition is " + ((SpeechRecognizer.chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
 	screenView.textLogerln("🛜 Press Ctrl+b to connect to device, or ask ChatGPT to connect", "info");
-	screenView.textLogerln("📸 Press Ctrl+c to open camera in a new tab", "info");
+	screenView.textLogerln("📸 Press Ctrl+c to open the camera in a new tab", "info");
 	screenView.textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
 }
@@ -148,7 +150,7 @@ function keypressed(event) {
 
     //switch to camera view with "Ctrl+C"
 	if (event.key == "c" && event.ctrlKey || event.key == "C" && event.ctrlKey) {
-		window.open("http://127.0.0.1:5502/Webapp/camera.html", "_blank");
+		window.open("http://127.0.0.1:5502/Webapp/camera.html", "_blank").focus();
 	}
 
 	// connect to Device with "Ctrl+b"

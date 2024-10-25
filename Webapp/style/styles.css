@@ -7,8 +7,8 @@ body {
   width: 100%;
   font-family: monospace;
   line-height: 1.4em;
-  font-size: 15;
-  background:#333333;
+  font-size: 12;
+  background:#000000;
 }
 
 button {
@@ -37,7 +37,6 @@ button:active {
   color: white;
 }
 #terminal * {
-  padding-right: 10em;
 }
 
 #thinking { 
@@ -77,7 +76,7 @@ button:active {
 	color: inherit;
 }
 .user {
-  color: rgb(76, 255, 178);
+  color: rgb(0, 255, 0);
 }
 
 .function {
@@ -88,11 +87,11 @@ button:active {
 }
 
 .assistant {
-  color: rgb(213, 26, 255);
+  color: rgb(255, 0, 255);
 }
 
 .error {
-  color: rgb(163, 144, 36);
+  color: rgb(255, 255, 0);
 }
 
 #camera-container {
@@ -143,6 +142,58 @@ button:active {
   line-height: 1.5;
 }
 
+/* Define the styles for the microphone circle */
+#commandline .mic-circle {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  position: relative;
+  margin-bottom: 2px;
+
+}
+
+#commandline .mic-circle::before {
+  /* 
+  content: '\1F3A4'; // Unicode for microphone symbol 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: white;
+  */
+}
+
+#commandline .mic-circle.green {
+  background-color: rgb(0, 255, 0);
+  animation: pulse 1.5s linear infinite;
+}
+
+#commandline .mic-circle.red {
+  background-color: rgb(255, 0, 0);
+  animation: blink 1s steps(5, start) infinite;
+}
+
+
+@keyframes pulse {
+  15% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  85% {
+    opacity: 0.8;
+  }
+}
+
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
 
 
 /*
