@@ -12,7 +12,7 @@ body {
 }
 
 button {
-  padding: 6px 24px;
+  padding: 6px 14px;
   font-family:  inherit;
   border-radius: 6px;
 }
@@ -96,9 +96,9 @@ button:active {
 
 #camera-container {
   position: fixed;
-  top: 20%;
+  top: 0%;
   left: 50%;
-  transform: translate(-50%, -20%);
+  transform: translate(-50%, 0%);
   width: 80vh;
   height: 80vh;
 }
