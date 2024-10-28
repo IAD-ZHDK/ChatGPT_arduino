@@ -28,6 +28,10 @@ const local_functionList = {
       description: "0 is off, 1 is on. Creates a party effect in the browser",
     },
     // add other custom functions here
+    update_p5:{
+      dataType: "string",
+      description: "Update the p5.js sketch with custom message",
+    }
   }
 
 const config = {

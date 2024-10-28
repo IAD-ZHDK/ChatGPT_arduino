@@ -37,6 +37,10 @@ function draw() {
   ellipse(x, y, 10, 10);
 }
 
+function mousePressed(){
+  sendMessage("mouse Pressed")
+}
+
 function sendMessage(message) {
   channel.postMessage({ type: 'update', value: message });
 }

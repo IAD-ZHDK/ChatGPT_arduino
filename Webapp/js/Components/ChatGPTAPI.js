@@ -10,8 +10,8 @@ class ChatGPTAPI {
     this.MaxTokens = config.chatGPTSettings.max_tokens;
     this.UserId = config.chatGPTSettings.user_id;
     this.ignoreSerial = false;
-	this.comMethod = communicationMethod;
-	this.localFunctions = localFunctions;
+	  this.comMethod = communicationMethod;
+	  this.localFunctions = localFunctions;
     // format all comm functions and add to chatGPTs function list
 
 	this.formatAndAddFunctions(config.functionList);

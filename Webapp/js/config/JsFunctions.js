@@ -12,9 +12,9 @@ class jsFunctions {
         this.functions = this.autoBindFunctions();
         //
         // add the following line for a new window to open, use the broadcast method to communicate between the browser and the new window
-        //
-        // window.open("http://127.0.0.1:5502/Webapp/js/config/newWindow.html", "_blank").focus();
-        // broadCast("init");
+        //  window.open("http://127.0.0.1:5502/Webapp/js/config/newWindow.html", "_blank").focus();		
+		this.broadCast("init");
+
         // bind the star_pressed function to the document
         document.addEventListener('keydown', (event) => {
             if (event.key === '*') {
@@ -59,6 +59,7 @@ class jsFunctions {
         this.channel.postMessage({ type: 'update', value: message });
     }
 
+
     ////////////////////////////////////////////////////////////
     // Example Function
     // Bellow this line you can add your own custom functions.
@@ -96,6 +97,10 @@ class jsFunctions {
         setInterval(createGlitter, 10);
     }
 
+    
+    update_p5() {
+          this.broadCast("hello from chatGPT!");  
+    }
     ////////////////////////////////////////////////////////////
     // Event Function Example
 
@@ -108,6 +113,7 @@ class jsFunctions {
             }
         this.submitPrompt(JSON.stringify(updateObject));
     }
+
 
 }
 
