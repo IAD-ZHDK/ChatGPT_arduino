@@ -7,7 +7,7 @@ class TextToSpeechOpenAI {
         this.isBuffering = false; // Track if audio is currently buffering
     }
 
-    async say(text) {
+    async say(text, voice = 0) {
         if (this.TextToSpeechSupported == false) return;
         console.log("TextToSpeech");
         if (!text) {
@@ -16,12 +16,13 @@ class TextToSpeechOpenAI {
         }
 
         try {
+            console.log("using voice "+voice)
             const response = await fetch('http://localhost:3000/text-to-speech', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text })
+                body: JSON.stringify({ text, voice})
             });
 
             if (!response.ok) {

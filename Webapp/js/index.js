@@ -49,7 +49,8 @@ function submitPrompt(input, role = "system") {
 			// convert the returnObject.message to string to avoid the class having access to the returnObject
 			let message = returnObject.message.toString();
 			try {
-				SpeechSynthesiser.say(message);
+				console.log("Voice"+ Voice)
+				SpeechSynthesiser.say(message, Voice);
 			} catch (error) {
 				console.log(error);
 			}
@@ -67,7 +68,7 @@ function submitPrompt(input, role = "system") {
 }
 
 window.onload = function () {
-	Voice = config.voice
+	Voice = voice
 	if (config.communicationMethod == "BLE") {
 		communicationMethod = new BLECommunication(submitPrompt);
 	} else if (config.communicationMethod == "Serial") {
