@@ -100,7 +100,7 @@ class jsFunctions {
 
     
     update_p5(command) {
-          this.broadCast("hello from chatGPT!");  
+          this.broadCast(command.value);  
     }
 
 

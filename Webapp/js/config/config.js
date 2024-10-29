@@ -34,7 +34,7 @@ const local_functionList = {
     },
     changeVoice:{
       dataType: "integer",
-      description: "Change the type of voice in the speech synthesis",
+      description: "Change the type of voice in the speech synthesis.",
     }
   }
 
