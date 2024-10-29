@@ -64,6 +64,7 @@ class jsFunctions {
     // Example Function
     // Bellow this line you can add your own custom functions.
     //////////////////////////////////////////////////////
+
     start_party(command) {
         function createGlitter() {
             const glitter = document.createElement('div');
@@ -98,9 +99,16 @@ class jsFunctions {
     }
 
     
-    update_p5() {
+    update_p5(command) {
           this.broadCast("hello from chatGPT!");  
     }
+
+
+    changeVoice(command) {
+        console.log("voice changed to: "+command.value)
+        voice = command.value; 
+    }
+
     ////////////////////////////////////////////////////////////
     // Event Function Example
 

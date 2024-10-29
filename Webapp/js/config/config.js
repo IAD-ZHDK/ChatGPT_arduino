@@ -1,4 +1,4 @@
-const voice = 0; // this can be used for defining the type of voice that is used for voice synthesis
+let voice = 1; // this can be used for defining the type of voice that is used for voice synthesis
 const notifications = [
     
   {
@@ -31,6 +31,10 @@ const local_functionList = {
     update_p5:{
       dataType: "string",
       description: "Update the p5.js sketch with custom message",
+    },
+    changeVoice:{
+      dataType: "integer",
+      description: "Change the type of voice in the speech synthesis",
     }
   }
 

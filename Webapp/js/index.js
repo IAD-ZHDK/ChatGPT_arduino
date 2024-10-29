@@ -16,7 +16,6 @@ let userActive = false;
 let screenView = null;
 let SpeechSynthesiser = null;
 let SpeechRecognizer = null;
-let Voice = 1;
 //create a channel to receive messages from ml5.js
 const channel = new BroadcastChannel('ml5-channel');
 
@@ -49,8 +48,8 @@ function submitPrompt(input, role = "system") {
 			// convert the returnObject.message to string to avoid the class having access to the returnObject
 			let message = returnObject.message.toString();
 			try {
-				console.log("Voice"+ Voice)
-				SpeechSynthesiser.say(message, Voice);
+				console.log("Voice"+ voice)
+				SpeechSynthesiser.say(message, voice);
 			} catch (error) {
 				console.log(error);
 			}
@@ -68,7 +67,6 @@ function submitPrompt(input, role = "system") {
 }
 
 window.onload = function () {
-	Voice = voice
 	if (config.communicationMethod == "BLE") {
 		communicationMethod = new BLECommunication(submitPrompt);
 	} else if (config.communicationMethod == "Serial") {

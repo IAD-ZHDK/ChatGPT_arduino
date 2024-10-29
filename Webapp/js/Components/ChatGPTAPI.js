@@ -234,7 +234,6 @@ class ChatGPTAPI {
                 // check if it's a local function
                 this.callFunctionByName(
                   functionName,
-                  window,
                   functionArguments
                 );
                 returnObject.message = "function_call " + functionName + "";
@@ -336,10 +335,10 @@ class ChatGPTAPI {
 
 
   callFunctionByName(functionName, args) {
+    console.log(args);
     if (this.localFunctions[functionName] && typeof this.localFunctions.executeFunction === 'function') {
 		console.log("local function found");
       return this.localFunctions.executeFunction(functionName, args);
-   // } else if (config.local_functionList.hasOwnProperty(functionName)) {
       // Handle local functions that are not part of jsFunctions
       // We should refactor this part in the future
 	} else if (typeof window[functionName] === 'function') { 
