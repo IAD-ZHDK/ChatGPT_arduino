@@ -8,6 +8,10 @@ class TextToSpeechOpenAI {
     }
 
     async say(text, voice = 0) {
+
+        // try to pause any existing utterences
+        this.pause();
+        //
         if (this.TextToSpeechSupported == false) return;
         console.log("TextToSpeech");
         if (!text) {

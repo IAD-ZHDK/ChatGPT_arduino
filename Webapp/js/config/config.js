@@ -4,8 +4,7 @@ const notifications = [
   {
     name: "shake",
     uuid: "19b10016-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-    type: "boolean",
-    checkOn: "rise",
+    type: "int",
     info: "The device has been shaken!",
   },
   {
