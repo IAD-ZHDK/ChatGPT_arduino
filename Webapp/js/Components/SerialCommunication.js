@@ -133,6 +133,7 @@ class SerialCommunication extends ICommunicationMethod {
   }
 
   read(data) {
+    console.log("waiting for read response");
     // todo: need to make a time out incase there is not response!
     let returnObject = {
       description: "",
@@ -171,9 +172,8 @@ class SerialCommunication extends ICommunicationMethod {
   }
   /// 
   onSerialErrorOccurred(eventSender, error) {
-    // this.connected = false;
-    console.log("onSerialErrorOccurred");
-    console.log(error);
+    //console.log("onSerialErrorOccurred");
+    //console.log(error);
   }
 
   onSerialConnectionOpened(eventSender) {
@@ -187,10 +187,8 @@ class SerialCommunication extends ICommunicationMethod {
   }
 
   receive(eventSender, newData) {
-    console.log(" 🎉 🎊 event! 🎉 🎊 ")
-    console.log("onSerialDataReceived", newData);
-
-    console.log("notify event")
+    console.log(eventSender);
+    console.log("new serial communication")
     console.log(newData)
 
     const parts = newData.split(':');
@@ -234,25 +232,33 @@ class SerialCommunication extends ICommunicationMethod {
           this.submitPrompt(JSON.stringify(updateObject));
         }
       } else {
+        // 
+        console.log(this.pendingReadPromise)
+
         if (this.pendingReadPromise) {
-          let notifyObject = Object.keys(functionList).find(key => key === commandName);
+          try {
+
+          let notifyObject = Object.keys(config.functionList).find(key => key === commandName);
+         
           if (notifyObject != null) {
             let updateObject = {
               description: commandName,
               value: value,
             }
-            /*
+          
             console.log(eventSender)
             console.log(updateObject)
             console.log(this.submitPrompt)
             console.log("there is a matching function in the function list")
-            this.submitPrompt(JSON.stringify(updateObject));
-*/
+
             this.pendingReadResolve(updateObject);
-            this.pendingReadPromise = null;
             this.pendingReadResolve = null;
-            // this could be a response from an earlier command 
+            this.pendingReadPromise = null;
+
           }
+        } catch (error) {
+          console.log(error)
+        }
         }
       }
     }

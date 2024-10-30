@@ -43,6 +43,12 @@ void loop() {
     String command = Serial.readStringUntil('\n');
     processCommand(command);
   }
+    
+  // remove this
+  if (analogRead(A0)>= 1000 && currentMillis - previousMillisShake >= 2000) {
+       notify("press", true);
+      previousMillisShake = currentMillis;
+  }
 
 #ifdef ARDUINO_AVR_UNO_WIFI_REV2
   // code for making the IMU data available over bluetooth
