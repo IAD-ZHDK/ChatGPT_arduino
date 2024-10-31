@@ -13,7 +13,7 @@ class jsFunctions {
         //
         // add the following line for a new window to open, use the broadcast method to communicate between the browser and the new window
         //  window.open("http://127.0.0.1:5502/Webapp/js/config/newWindow.html", "_blank").focus();		
-		this.broadCast("init");
+        this.broadCast("init");
 
         // bind the star_pressed function to the document
         document.addEventListener('keydown', (event) => {
@@ -23,10 +23,10 @@ class jsFunctions {
             }
         });
 
+        // Setup for accessing data passed through from connected device
         // Define the handler for the Proxy
         const handler = {
             set(target, property, value) {
-                console.log(`Property ${property} set to ${value}`);
                 target[property] = value;
                 // Trigger custom event
                 const event = new CustomEvent('globalObjectChanged', { detail: { property, value } });
@@ -49,16 +49,16 @@ class jsFunctions {
         window.addEventListener('globalObjectChanged', (event) => {
             this.newDataFromDevice(event);
         });
- 
-  } 
+
+    }
 
     autoBindFunctions() {
         const functions = {};
         const prototype = Object.getPrototypeOf(this);
         const properties = Object.getOwnPropertyNames(prototype);
         for (const prop of properties) {
-            if (typeof this[prop] === 'function' && 
-                prop !== 'constructor' && 
+            if (typeof this[prop] === 'function' &&
+                prop !== 'constructor' &&
                 prop !== 'autoBindFunctions' &&
                 prop !== 'executeFunction' &&
                 prop !== 'getFunctionList') {
@@ -85,11 +85,6 @@ class jsFunctions {
 
     broadCast(message) {
         this.channel.postMessage({ type: 'update', value: message });
-    }
-
-    // this can be used for accessing data from device, given the type GPT_ignore in the config file
-    newDataFromDevice() {
-        console.log(window.myGlobalObject);
     }
 
     ////////////////////////////////////////////////////////////
@@ -130,16 +125,22 @@ class jsFunctions {
         setInterval(createGlitter, 10);
     }
 
-    
+
     update_p5(command) {
-          this.broadCast(command.value);  
+        this.broadCast(command.value);
     }
 
 
     changeVoice(command) {
-        console.log("voice changed to: "+command.value)
-        voice = command.value; 
+        console.log("voice changed to: " + command.value)
+        voice = command.value;
     }
+
+    // this can be used for accessing data from device, given the type GPT_ignore in the config file
+    newDataFromDevice() {
+        console.log(window.myGlobalObject);
+    }
+
 
     ////////////////////////////////////////////////////////////
     // Event Function Example
@@ -147,10 +148,10 @@ class jsFunctions {
     star_pressed() {
         console.log("star pressed")
         let updateObject = {
-                description: "star_pressed",
-                value: "true",
-                type: "bool",
-            }
+            description: "star_pressed",
+            value: "true",
+            type: "bool",
+        }
         this.submitPrompt(JSON.stringify(updateObject));
     }
 
