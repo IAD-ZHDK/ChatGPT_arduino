@@ -187,7 +187,6 @@ class SerialCommunication extends ICommunicationMethod {
   }
 
   receive(eventSender, newData) {
-    console.log(eventSender);
     console.log("new serial communication")
     console.log(newData)
 
@@ -200,7 +199,6 @@ class SerialCommunication extends ICommunicationMethod {
 
       let notifyObject = config.notifications.find(notifyObj => notifyObj.name === commandName);
       if (notifyObject != null) {
-        console.log("there is a matching function in the Notify list")
         // there is a matching function in the Notify list
         let oldValue = notifyObject.value;
         notifyObject.value = value;
@@ -210,8 +208,18 @@ class SerialCommunication extends ICommunicationMethod {
           value: notifyObject.value,
           type: notifyObject.type,
         }
-        // handle boolean events
-        if (notifyObject.type == "boolean" && notifyObject.checkOn != "change") {
+        console.log(updateObject)
+
+        if (updateObject.type == "GPT_ignore") {
+          // pass the data to the browser window, but not to ChatGPT
+          try{
+          window.myGlobalObject.name = commandName; 
+          window.myGlobalObject.value = updateObject.value; 
+          } catch(err){
+            console.log(err)
+          }
+        } else if (notifyObject.type == "boolean" && notifyObject.checkOn != "change") {
+            // handle boolean events
           if (oldValue < notifyObject.value && notifyObject.checkOn == "rise") {
             // rising
             console.log("value rising")
@@ -228,16 +236,13 @@ class SerialCommunication extends ICommunicationMethod {
           console.log(updateObject)
           console.log(JSON.stringify(updateObject))
           console.log(this.submitPrompt)
-          // todo:improve the handling of notifcations 
           this.submitPrompt(JSON.stringify(updateObject));
         }
       } else {
-        // 
+        // This relates to responses from over serial, from prevous requests 
         console.log(this.pendingReadPromise)
-
         if (this.pendingReadPromise) {
           try {
-
           let notifyObject = Object.keys(config.functionList).find(key => key === commandName);
          
           if (notifyObject != null) {
@@ -245,12 +250,6 @@ class SerialCommunication extends ICommunicationMethod {
               description: commandName,
               value: value,
             }
-          
-            console.log(eventSender)
-            console.log(updateObject)
-            console.log(this.submitPrompt)
-            console.log("there is a matching function in the function list")
-
             this.pendingReadResolve(updateObject);
             this.pendingReadResolve = null;
             this.pendingReadPromise = null;

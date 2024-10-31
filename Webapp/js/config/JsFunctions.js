@@ -22,7 +22,35 @@ class jsFunctions {
                 this.star_pressed();
             }
         });
-    }
+
+        // Define the handler for the Proxy
+        const handler = {
+            set(target, property, value) {
+                console.log(`Property ${property} set to ${value}`);
+                target[property] = value;
+                // Trigger custom event
+                const event = new CustomEvent('globalObjectChanged', { detail: { property, value } });
+                window.dispatchEvent(event);
+                return true;
+            },
+            get(target, property) {
+                console.log(`Property ${property} accessed`);
+                return target[property];
+            }
+        };
+
+        // Create the Proxy
+        const myGlobalObject = new Proxy({}, handler);
+
+        // Attach the Proxy to the window object
+        window.myGlobalObject = myGlobalObject;
+
+        // Listen for the custom event
+        window.addEventListener('globalObjectChanged', (event) => {
+            this.newDataFromDevice(event);
+        });
+ 
+  } 
 
     autoBindFunctions() {
         const functions = {};
@@ -59,6 +87,10 @@ class jsFunctions {
         this.channel.postMessage({ type: 'update', value: message });
     }
 
+    // this can be used for accessing data from device, given the type GPT_ignore in the config file
+    newDataFromDevice() {
+        console.log(window.myGlobalObject);
+    }
 
     ////////////////////////////////////////////////////////////
     // Example Function

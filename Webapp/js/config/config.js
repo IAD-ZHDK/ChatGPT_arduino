@@ -18,6 +18,11 @@ const notifications = [
     type: "boolean", // possible values are "boolean" and "int"
     info: "* has been pressed on the keyboard. Sing a song about the Zurich Univesity of the Arts.",
   },
+  {
+    name: "IMU_Data", 
+    type: "GPT_ignore", // this is a special type of notification, that should be ignored by ChatGPT but the data should be made available in the browser
+    info: "",
+  },
   // add more notifications here based on some custom functions
 ];
 
