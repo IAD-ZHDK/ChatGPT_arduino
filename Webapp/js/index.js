@@ -75,6 +75,7 @@ window.onload = function () {
 		communicationMethod = new SerialCommunication(submitPrompt);
 	}
 	SpeechRecognizer = new SpeechToText(submitPrompt)
+	initializeSpeechSynthesiser();
 	localFunctions = new jsFunctions(submitPrompt,communicationMethod, SpeechRecognizer, SpeechSynthesiser);
     local_functionList = { ...local_functionList, ...localFunctions.getFunctionList() };
 	console.log(local_functionList)
