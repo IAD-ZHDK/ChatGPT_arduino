@@ -1,5 +1,17 @@
 class jsFunctions {
-    constructor(submitPrompt, communicationMethod) {
+    constructor(submitPrompt, communicationMethod, SpeechRecognizer, SpeechSynthesiser) {
+        try {
+            this.SpeechRecognizer = SpeechRecognizer;
+        } catch (error) {
+            console.log(error);
+        }
+        try {
+            this.SpeechSynthesiser = SpeechSynthesiser;
+            console.log(this.SpeechSynthesiser);
+        } catch (error) {
+            console.log(error);
+        }
+
         this.channel = new BroadcastChannel('example_channel');
         this.channel.onmessage = (event) => {
             console.log('Received message in new window:', event.data);
@@ -21,6 +33,22 @@ class jsFunctions {
                 console.log("star pressed")
                 this.star_pressed();
             }
+            /*
+            if (event.key === 'z') {
+            // start speech recognition
+                this.SpeechRecognizer.begin(true);
+                this.SpeechRecognizer.pause();
+            }
+            if (event.key === 'j') {
+            // resume speech recognition
+                this.SpeechRecognizer.manuelResume();
+                this.SpeechSynthesiser.pause();
+            }
+            if (event.key === 'k') {
+                // pause speech recognition
+                this.SpeechRecognizer.pause();
+            }
+            */
         });
 
         // Setup for accessing data passed through from connected device

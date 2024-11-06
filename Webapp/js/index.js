@@ -74,8 +74,8 @@ window.onload = function () {
 	} else {
 		communicationMethod = new SerialCommunication(submitPrompt);
 	}
-
-	localFunctions = new jsFunctions(submitPrompt,communicationMethod);
+	SpeechRecognizer = new SpeechToText(submitPrompt)
+	localFunctions = new jsFunctions(submitPrompt,communicationMethod, SpeechRecognizer, SpeechSynthesiser);
     local_functionList = { ...local_functionList, ...localFunctions.getFunctionList() };
 	console.log(local_functionList)
 
@@ -85,8 +85,8 @@ window.onload = function () {
         }
     };
 	
-	SpeechRecognizer = new SpeechToText(submitPrompt)
-	initializeSpeechSynthesiser();
+	
+
 
 	screenView = new View();
 	ChatGPT = new ChatGPTAPI(communicationMethod, localFunctions);
