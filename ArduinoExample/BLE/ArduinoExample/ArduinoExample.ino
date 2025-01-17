@@ -1,11 +1,12 @@
 #include <ArduinoBLE.h>
 #include <Arduino_LSM6DS3.h>  // the IMU used on the Uno Wifi rev 2
+#define potiPin A0
 
 BLEService arduinoBleService("19B10000-E8F2-537E-4F6C-D104768A1214");  // create service
 
 // create characteristics and allow remote device to read and write
 BLEBoolCharacteristic LEDCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
-BLECharacteristic intCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite, sizeof(int32_t));
+BLECharacteristic intCharacteristic("19B10002-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite, sizeof(int32_t));
 BLECharacteristic accelerationCharacteristic("19B10014-E8F2-537E-4F6C-D104768A1214", BLERead, sizeof(int32_t));
 BLECharacteristic stringCharacteristic("19B10018-E8F2-537E-4F6C-D104768A1214", BLEWrite, sizeof(int8_t) * 32);  // this is the maxium length of 32 bytes
 BLEBoolCharacteristic shakeCharacteristic("19B10016-E8F2-537E-4F6C-D104768A1214", BLENotify);
@@ -18,7 +19,11 @@ BLECharacteristic characteristicList[] = { LEDCharacteristic, accelerationCharac
                                                                          
 int potiValue = 0;
 unsigned long previousMillisPoti = 0;  // This is used to keep track of notify frequencies
-#define potiPin A0
+
+unsigned long previousMillisShake = 0;
+
+
+
 
 void setup() {
   Serial.begin(9600);

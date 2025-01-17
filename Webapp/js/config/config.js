@@ -4,8 +4,8 @@ const notifications = [
   {
     name: "shake",
     uuid: "19b10016-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
-    type: "int",
-    info: "The device has been shaken!",
+    type: "boolean",
+    info: "The device has been shaken! Get really mad at the user!",
   },
   {
     name: "Potentiometer",
@@ -54,7 +54,7 @@ const config = {
     url: "https://api.openai.com/v1/chat/completions", // gpt-4 is "https://api.openai.com/v1/completions";
   },
 
-  communicationMethod: "Serial", // or "BLE"
+  communicationMethod: "BLE", // or "BLE"
   serviceUuid: "19b10000-e8f2-537e-4f6c-d104768a1214", // Only needed for BLE
 
   // The list of functions should match those set up on the arduino 

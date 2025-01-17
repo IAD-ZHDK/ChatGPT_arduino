@@ -6,6 +6,7 @@ class BLECommunication extends ICommunicationMethod {
         super(submitPrompt);
         this.connected = false;
         this.myCharacteristics = [];
+        this.receive = this.receive.bind(this);
         // Other initializations
         this.onDisconnected = this.onDisconnected.bind(this);
         this.connect = this.connect.bind(this);
@@ -21,12 +22,14 @@ class BLECommunication extends ICommunicationMethod {
             if (notifyObject.type == "boolean") {
                   console.log("boolean")
                 notifyObject.value = value.getUint8();
+                
             } else if (notifyObject.type == "int") {
                 console.log("int")
                 // Check if the DataView has enough bytes to read an Int32
                 if (value.byteLength >= 4) {
                     notifyObject.value = value.getInt32(0, true);
                 } else {
+                    console.log(value);
                     console.error("DataView does not contain enough bytes to read an Int32");
                     return;
                 }
@@ -37,25 +40,14 @@ class BLECommunication extends ICommunicationMethod {
                 type: notifyObject.type,
             }
             // handle boolean events
-            if (notifyObject.type == "boolean" && notifyObject.checkOn != "change") {
-                if (oldValue < notifyObject.value && notifyObject.checkOn == "rise") {
+                if (oldValue != notifyObject.value ) {
                     // rising
-                    console.log("value rising")
+                    console.log("value change")
                     // todo:improve the handling of notifcations 
                     this.submitPrompt(JSON.stringify(updateObject));
-                } else if (oldValue > notifyObject.value && notifyObject.checkOn == "fall") {
-                    //falling
-                    console.log("value falling")
-                    // todo:improve the handling of notifcations 
-                   this.submitPrompt(JSON.stringify(updateObject));
-                }
-            } else {
-                console.log("value change")
-                           // todo:improve the handling of notifcations 
-               this.submitPrompt(JSON.stringify(updateObject));
-            }
-        }
+                } 
     }
+}
 
 
     onDisconnected(event) {
@@ -79,7 +71,7 @@ class BLECommunication extends ICommunicationMethod {
             }
             navigator.bluetooth.requestDevice({
                 filters: [{
-                    services: [serviceUuid]
+                    services: [config.serviceUuid]
                 }]
             })
                 .then(device => {
@@ -94,7 +86,7 @@ class BLECommunication extends ICommunicationMethod {
                 })
                 .then(server => {
                     console.log('Getting Service...');
-                    return server.getPrimaryService(serviceUuid);
+                    return server.getPrimaryService(config.serviceUuid);
                 })
                 .then(service => {
                     this.connected = true;
