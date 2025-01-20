@@ -143,17 +143,18 @@ class BLECommunication extends ICommunicationMethod {
                 console.log(e);
             }
             console.log("writing to device:");
+            // todo: these are all incorectly setting everything to 8 bits
             if (characteristic != null) {
                 let bufferToSend;
                 if (object.dataType == "boolean") {
                     console.log("boolean")
                     bufferToSend = Int8Array.of(object.value);
                 } else if (object.dataType == "integer" || typeof object.value == "int") {
-                    console.log("int")
-                    bufferToSend = Int32Array.of(object.value);
+                    console.log("int") // wrong data type
+                    bufferToSend = Int8Array.of(object.value);
                 } else if (object.dataType == "number") {
-                    console.log("float")
-                    bufferToSend = Float32Array.of(object.value);
+                    console.log("int") 
+                    bufferToSend = Int8Array.of(object.value);
                 } else {
                     // treat everything else as a string
                     console.log("string")
