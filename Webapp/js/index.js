@@ -11,7 +11,7 @@ import checkServerStatus from './Components/CheckServer.js';
 let communicationMethod = null;
 let ChatGPT = null;
 let localFunctions = null;
-let local_functionList = null;
+let local_functionList = {};
 let userActive = false;
 let screenView = null;
 let SpeechSynthesiser = null;
@@ -20,7 +20,11 @@ let SpeechRecognizer = null;
 const channel = new BroadcastChannel('ml5-channel');
 
 function submitPrompt(input, role = "system") {
-	SpeechRecognizer.pause();
+	try {
+		if (SpeechRecognizer && typeof SpeechRecognizer.pause === 'function') SpeechRecognizer.pause();
+	} catch (e) {
+		console.warn('SpeechRecognizer.pause() failed or not available', e);
+	}
 	let prompt = document.getElementById("prompt");
 	if (input != "") {
 		screenView.textLogerln(input, role)
@@ -47,9 +51,14 @@ function submitPrompt(input, role = "system") {
 		if (returnObject.role == "assistant") {
 			// convert the returnObject.message to string to avoid the class having access to the returnObject
 			let message = returnObject.message.toString();
+			let voice = config.textToSpeechModel;
 			try {
-				console.log("Voice"+ voice)
-				SpeechSynthesiser.say(message, voice);
+				console.log("Voice" + voice)
+				if (SpeechSynthesiser && typeof SpeechSynthesiser.say === 'function') {
+					SpeechSynthesiser.say(message, voice);
+				} else {
+					console.warn('SpeechSynthesiser.say not available');
+				}
 			} catch (error) {
 				console.log(error);
 			}
@@ -76,17 +85,16 @@ window.onload = function () {
 	}
 	SpeechRecognizer = new SpeechToText(submitPrompt)
 	initializeSpeechSynthesiser();
-	localFunctions = new jsFunctions(submitPrompt,communicationMethod, SpeechRecognizer, SpeechSynthesiser);
-    local_functionList = { ...local_functionList, ...localFunctions.getFunctionList() };
+	localFunctions = new jsFunctions(submitPrompt, communicationMethod, SpeechRecognizer, SpeechSynthesiser);
+	local_functionList = { ...local_functionList, ...localFunctions.getFunctionList() };
 	console.log(local_functionList)
 
 	channel.onmessage = (event) => {
-        if (event.data.type === 'executeFunction' && localFunctions.executeFunction) {
-            localFunctions.executeFunction(event.data.functionName, event.data.arg);
-        }
-    };
-	
-	
+		if (event.data.type === 'executeFunction' && localFunctions.executeFunction) {
+			localFunctions.executeFunction(event.data.functionName, event.data.arg);
+		}
+	};
+
 
 
 	screenView = new View();
@@ -97,7 +105,7 @@ window.onload = function () {
 	screenView.textLogerln("🛜 Press Ctrl+b to connect to device, or ask ChatGPT to connect", "info");
 	screenView.textLogerln("📸 Press Ctrl+c to open the camera in a new tab", "info");
 	screenView.textLogerln("🎨 Press Ctrl+p to open p5 sketch in a new tab", "info");
-	screenView.textLogerln("Edit the Params.js file, and get ChatGPT to connect to your device first.", "info");
+	screenView.textLogerln("Edit the config.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
 }
 
@@ -149,14 +157,14 @@ function keypressed(event) {
 		screenView.textLogerln("speech recognition is " + ((SpeechRecognizer.chkSpeak) ? "on" : "off") + " 🎤 ", "info");
 	}
 
-    //switch to camera view with "Ctrl+C"
+	//switch to camera view with "Ctrl+C"
 	if (event.key == "c" && event.ctrlKey || event.key == "C" && event.ctrlKey) {
 		window.open("http://127.0.0.1:5502/Webapp/camera.html", "_blank").focus();
 	}
 
-	  //switch to camera view with "Ctrl+C"
-	  if (event.key == "p" && event.ctrlKey || event.key == "P" && event.ctrlKey) {
-        window.open("http://127.0.0.1:5502/Webapp/js/config/newWindow.html", "_blank").focus();
+	//switch to camera view with "Ctrl+C"
+	if (event.key == "p" && event.ctrlKey || event.key == "P" && event.ctrlKey) {
+		window.open("http://127.0.0.1:5502/Webapp/js/config/newWindow.html", "_blank").focus();
 	}
 
 	// connect to Device with "Ctrl+b"

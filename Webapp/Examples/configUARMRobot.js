@@ -86,7 +86,10 @@ const config = {
       maxHeight = 150;
       minStretch = 95;
       maxStretch = 330;
-      maxAngle = 180;`,
+      maxAngle = 180;
+  
+      `
+      ,
     },
 
  // we can also add in history of older conversations here, or construct new ones.

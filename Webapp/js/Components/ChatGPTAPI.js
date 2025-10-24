@@ -2,6 +2,7 @@
 // look at https://platform.openai.com/docs/guides/gpt-best-practices/strategy-split-complex-tasks-into-simpler-subtasks
 
 // check this for propoer formating of responses in json format- https://platform.openai.com/docs/guides/gpt/chat-completions-api c
+import OPENAI_API_KEY from '../chatGPTkey.js';
 
 class ChatGPTAPI {
   constructor(communicationMethod, localFunctions) {
@@ -10,13 +11,22 @@ class ChatGPTAPI {
     this.MaxTokens = config.chatGPTSettings.max_tokens;
     this.UserId = config.chatGPTSettings.user_id;
     this.ignoreSerial = false;
-	  this.comMethod = communicationMethod;
-	  this.localFunctions = localFunctions;
+    this.comMethod = communicationMethod;
+    this.localFunctions = localFunctions;
     // format all comm functions and add to chatGPTs function list
 
-	this.formatAndAddFunctions(config.functionList);
-	this.formatAndAddFunctions(config.local_functionList);
+    this.formatAndAddFunctions(config.functionList);
+    this.formatAndAddFunctions(config.local_functionList);
     console.log(this.additionalFunctions);
+    // first try to import key from "js/chatGPTkey.js" 
+    // check if OPENAI_API_KEY is defined, otherwise check in config.js
+    if (typeof OPENAI_API_KEY === 'undefined') {
+      if (typeof config.OPENAI_API_KEY !== 'undefined') {
+        OPENAI_API_KEY = config.OPENAI_API_KEY;
+      } else {
+        console.error('OPENAI_API_KEY is not defined in config.js or globally.');
+      }
+    }
   }
 
   formatAndAddFunctions(list) {
@@ -189,12 +199,12 @@ class ChatGPTAPI {
                     ); // Call the method with arguments
                   } else if (config.functionList[functionName].commType == "writeRaw") {
                     const method = sComMethod.getMethod("writeRaw");
-                    const newArgument =  String(functionArguments.value)
+                    const newArgument = String(functionArguments.value)
                     functionReturnPromise = method.call(
                       sComMethod,
                       newArgument
                     )
-                  }else {
+                  } else {
                     // read only
                     const method = sComMethod.getMethod("read");
                     functionReturnPromise = method.call(
@@ -270,8 +280,8 @@ class ChatGPTAPI {
         max_tokens: sMaxTokens,
         user: sUserId,
         temperature: config.chatGPTSettings.temperature,
-        frequency_penalty: config.chatGPTSettings.frequency_penalty, 
-        presence_penalty: config.chatGPTSettings.presence_penalty, 
+        frequency_penalty: config.chatGPTSettings.frequency_penalty,
+        presence_penalty: config.chatGPTSettings.presence_penalty,
         stop: ["#", ";"], //Up to 4 sequences where the API will stop generating
         //further tokens. The returned text will not contain
         //the stop sequence.
@@ -338,13 +348,13 @@ class ChatGPTAPI {
   callFunctionByName(functionName, args, window) {
     console.log(args);
     if (this.localFunctions[functionName] && typeof this.localFunctions.executeFunction === 'function') {
-		console.log("local function found");
+      console.log("local function found");
       return this.localFunctions.executeFunction(functionName, args);
       // Handle local functions that are not part of jsFunctions
       // We should refactor this part in the future
-    
-	} else if (typeof window[functionName] === 'function') { 
-	  return window[functionName](args);
+
+    } else if (typeof window[functionName] === 'function') {
+      return window[functionName](args);
     } else {
       console.error(`Function ${functionName} not found`);
     }

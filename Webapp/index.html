@@ -1,25 +1,114 @@
 <html>
+
 <head>
+    <!-- Load configuration first (as a module). The inline module imports the project's config file
+                 and normalizes several possible config shapes (v1/v2) into a single `window.config` object
+                 so existing non-module code can keep referencing the global `config`. -->
+    <script type="module">
+        // Attempt to import the config as an ES module (works for config files that export { config })
+        // Then normalize and expose it as window.config for legacy scripts.
+        async function loadAndNormalizeConfig() {
+            try {
+                const mod = await import('./js/config/config.js');
+                const imported = mod.config || mod.default || window.config || {};
+
+                function normalize(cfg) {
+                    if (!cfg) return cfg;
+                    // If this is the newer repo shape (cfg.functions), adapt it
+                    if (cfg.functions) {
+                        const actions = cfg.functions.actions || {};
+                        const notificationsObj = cfg.functions.notifications || {};
+                        const frontEnd = cfg.functions.frontEnd || {};
+
+                        const functionList = {};
+                        for (const [name, val] of Object.entries(actions)) {
+                            functionList[name] = {
+                                uuid: val.uuid || val.UUID || (val.uuid && val.uuid.toLowerCase && val.uuid.toLowerCase()),
+                                commType: val.commType || val.comm_type || val.comm || 'write',
+                                dataType: val.dataType || val.data_type || val.dataType || 'string',
+                                description: val.description || val.desc || '',
+                            };
+                        }
+
+                        const notifications = Object.keys(notificationsObj).map(name => {
+                            const v = notificationsObj[name] || {};
+                            return {
+                                name: name,
+                                uuid: v.uuid || v.UUID,
+                                type: v.dataType || v.dataType || (v.type === 'GPT_ignore' ? 'GPT_ignore' : (v.dataType === 'boolean' ? 'boolean' : 'int')),
+                                info: v.description || v.info || '',
+                            };
+                        });
+
+                        const local_functionList = {};
+                        for (const [name, val] of Object.entries(frontEnd)) {
+                            local_functionList[name] = {
+                                dataType: val.dataType || val.data_type || 'boolean',
+                                description: val.description || val.desc || '',
+                            };
+                        }
+
+                        // Build normalized object while preserving top-level settings
+                        const normalized = Object.assign({}, cfg, {
+                            functionList: functionList,
+                            notifications: notifications,
+                            local_functionList: local_functionList,
+                        });
+                        return normalized;
+                    }
+
+                    // If older shape (functionList exists and notifications is an object), ensure notifications is array
+                    if (cfg.functionList && cfg.notifications && !Array.isArray(cfg.notifications) && typeof cfg.notifications === 'object') {
+                        cfg.notifications = Object.keys(cfg.notifications).map(name => {
+                            const v = cfg.notifications[name] || {};
+                            return {
+                                name: name,
+                                uuid: v.uuid || v.UUID,
+                                type: v.type || v.dataType || 'boolean',
+                                info: v.info || v.description || '',
+                            };
+                        });
+                    }
+
+                    return cfg;
+                }
+
+                const normalized = normalize(imported);
+                // Attach to window so legacy scripts (non-modules) can still use `config`
+                window.config = normalized;
+                // Also keep a direct reference for modules that import config.js and expect exported object
+                return normalized;
+            } catch (err) {
+                // If import failed (e.g., config.js is a classic script that defines window.config), assume it already exists
+                console.warn('Could not import ./js/config/config.js as a module. Falling back to window.config if present.', err);
+                return window.config;
+            }
+        }
+
+        // load immediately
+        await loadAndNormalizeConfig();
+    </script>
+
+    <!-- Then load main application module -->
     <script src="js/index.js" type="module"></script>
-    <script src="js/config/config.js" type="text/javascript"></script>
-    <script src="js/chatGPTkey.js" type="text/javascript"></script>
     <!--<script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.js" type="text/javascript"></script> -->
 
     <link rel="stylesheet" type="text/css" href="style/styles.css">
 </head>
 
 <body>
+
     <body>
         <div id="terminal">
             <div id="history">
-        </div>
-        <span id="thinking" class="function">thinking..<span class="blink">.</span></span>  
+            </div>
+            <span id="thinking" class="function">thinking..<span class="blink">.</span></span>
             <div id="commandline">
-                :<input type="text" id="prompt"/>
+                :<input type="text" id="prompt" />
             </div>
         </div>
     </body>
-    
+
 </body>
 
 </html>
