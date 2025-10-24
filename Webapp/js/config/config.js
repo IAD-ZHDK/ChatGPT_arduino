@@ -1,7 +1,7 @@
 const config = {
   textToSpeechModel: 1, // 
   speechToTextModel: 0, // 
-  // OPENAI_API_KEY: 'your-api-key-here'
+  // OPENAI_API_KEY: 'your-api-key-here',
   // WiFi Configuration (optional)
   // The system will auto-detect the network type based on your credentials:
 

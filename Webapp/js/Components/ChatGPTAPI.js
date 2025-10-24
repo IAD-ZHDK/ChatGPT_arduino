@@ -1,8 +1,11 @@
 // based of https://www.codeproject.com/Articles/5350454/Chat-GPT-in-JavaScript
 // look at https://platform.openai.com/docs/guides/gpt-best-practices/strategy-split-complex-tasks-into-simpler-subtasks
 
-// check this for propoer formating of responses in json format- https://platform.openai.com/docs/guides/gpt/chat-completions-api c
-import OPENAI_API_KEY from '../chatGPTkey.js';
+// check this for proper formatting of responses in json format -
+// https://platform.openai.com/docs/guides/gpt/chat-completions-api
+// The API key may be provided in `js/chatGPTkey.js` (optional) or in `config.OPENAI_API_KEY`.
+// Use a dynamic import so the module is optional and doesn't cause a hard failure if missing.
+let OPENAI_API_KEY;
 
 class ChatGPTAPI {
   constructor(communicationMethod, localFunctions) {
@@ -18,15 +21,9 @@ class ChatGPTAPI {
     this.formatAndAddFunctions(config.functionList);
     this.formatAndAddFunctions(config.local_functionList);
     console.log(this.additionalFunctions);
-    // first try to import key from "js/chatGPTkey.js" 
-    // check if OPENAI_API_KEY is defined, otherwise check in config.js
-    if (typeof OPENAI_API_KEY === 'undefined') {
-      if (typeof config.OPENAI_API_KEY !== 'undefined') {
-        OPENAI_API_KEY = config.OPENAI_API_KEY;
-      } else {
-        console.error('OPENAI_API_KEY is not defined in config.js or globally.');
-      }
-    }
+    // Do not attempt to load the optional key at startup. Loading it lazily
+    // inside `send()` avoids slowing page load; the key will be loaded only
+    // when the app actually needs to make a request.
   }
 
   formatAndAddFunctions(list) {
@@ -83,7 +80,27 @@ class ChatGPTAPI {
     return this.Model;
   }
 
-  send(sQuestion, role, funtionName) {
+  async send(sQuestion, role, funtionName) {
+    // Lazy-load the API key when a request is made. This keeps startup fast
+    // and only attempts to import the optional module when needed.
+    if (!OPENAI_API_KEY) {
+      // first try config
+      if (typeof config !== 'undefined' && typeof config.OPENAI_API_KEY !== 'undefined') {
+        OPENAI_API_KEY = config.OPENAI_API_KEY;
+        console.log('Loaded OPENAI_API_KEY from config.js');
+      } else {
+        // try to dynamically import the optional key file; if it 404s this
+        // may still take a short time, but only when the user sends a request.
+        try {
+          const m = await import('../chatGPTkey.js');
+          OPENAI_API_KEY = m.default || m.OPENAI_API_KEY || undefined;
+          if (OPENAI_API_KEY) console.log('Loaded OPENAI_API_KEY from chatGPTkey.js');
+        } catch (e) {
+          // ignore: file missing or failed to load; we'll handle missing key below
+        }
+      }
+    }
+
     return new Promise((resolve, reject) => {
       let sURL = this.Url;
       let sModel = this.Model;
@@ -108,6 +125,16 @@ class ChatGPTAPI {
         return;
       }
       console.log("role: " + role + " is sending message: " + sQuestion);
+
+      // If the API key still isn't available, fail gracefully with the
+      // existing error-shaped returnObject (keeps behavior consistent).
+      if (!OPENAI_API_KEY) {
+        returnObject.message =
+          'OPENAI_API_KEY is not set. Provide js/chatGPTkey.js or set config.OPENAI_API_KEY.';
+        returnObject.role = 'error';
+        resolve(returnObject);
+        return;
+      }
 
       const oHttp = new XMLHttpRequest();
 
