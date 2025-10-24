@@ -103,7 +103,7 @@ window.onload = function () {
 	screenView.textLogerln("model: " + ChatGPT.getModel(), "info");
 	screenView.textLogerln("🎤 speech recognition is " + ((SpeechRecognizer.chkSpeak) ? "on" : "off") + ". Press Ctrl+s to turn on", "info");
 	screenView.textLogerln("🛜 Press Ctrl+b to connect to device, or ask ChatGPT to connect", "info");
-	screenView.textLogerln("📸 Press Ctrl+c to open the camera in a new tab", "info");
+	//screenView.textLogerln("📸 Press Ctrl+c to open the camera in a new tab", "info");
 	screenView.textLogerln("🎨 Press Ctrl+p to open p5 sketch in a new tab", "info");
 	screenView.textLogerln("Edit the config.js file, and get ChatGPT to connect to your device first.", "info");
 	userActive = true
